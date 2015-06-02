@@ -12,6 +12,7 @@
 \usepackage{tcolorbox}
 \usepackage{anyfontsize}
 \usepackage{xspace}
+\usepackage{graphicx}
 
 % define footer text
 \newcommand{\footlinetext}{CUDA Introduction}
@@ -530,29 +531,40 @@ add<<<1,n>>>(a, b, n);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{center}
 \vspace{-0.75cm}
-\begin{tabular}{|c|m{5cm}|m{4cm}|}
+\begin{tabular}{|c|m{4cm}|m{5cm}|}
     \cline{1-2}
         concept & hardware &  \multicolumn{1}{c}{} \\
     \hline
         thread &
-        core &
+        \begin{minipage}{4cm}
+            \includegraphics[width=0.3\textwidth]{./images/core.pdf}
+        \end{minipage} &
         \footnotesize
         \begin{itemize}
             \item each thread executed on a core
         \end{itemize} \\
     \hline
-        block & SMX &
+        block &
+        \begin{minipage}{4cm}
+            \includegraphics[width=0.3\textwidth]{./images/smx.pdf}
+        \end{minipage} &
         \footnotesize
         \begin{itemize}
-            \item block executed on on SMX
-            \item more than one block per SMX if sufficient resources
+            \item block executed on 1 SMX
+            \item multiple blocks per SMX if sufficient resources
             \item threads in a block share SMX resources
         \end{itemize} \\
     \hline
-        grid & GPU &
+        grid &
+        \begin{minipage}{4cm}
+            \includegraphics[width=0.3\textwidth]{./images/smx.pdf}
+            \includegraphics[width=0.3\textwidth]{./images/smx.pdf}
+            \includegraphics[width=0.3\textwidth]{./images/smx.pdf}
+        \end{minipage} &
         \footnotesize
         \begin{itemize}
-            \item kernel is executed by grid block
+            \item kernel is executed in grid of blocks
+            \item blocks distributed over SMXs
             \item multiple kernels can run at same time
         \end{itemize} \\
 \hline
