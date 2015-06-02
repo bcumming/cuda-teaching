@@ -1,0 +1,78 @@
+CUDA is a big topic: there is a lot of ground to cover before we can get stuck into implementing many examples.
+- How GPUs work and differ from CPUs
+- Memory spaces
+- Language features that CUDA adds to C++
+- How to think in fine-grained parallelism
+
+We want to hit the ground running, which means that we should all have a .
+
+During the workshop, I will encourage Fortran programmers to sit next to a C++ programmer. However for all the C and C++ programmers out there, I will expect a minimum level of understanding.
+
+I will hold a 1-hour long optional session before the workshop (9 am Monday morning).
+
+# Templates
+
+Templates are a mechanism used to indroduce _generic_ programming in C++. It is possible to do some quite mind bending stuff with templates, for example template meta programming. For this reason, a lot of people dismiss templates as being too hard. They might have a point about the meta programming, but templates are very useful and easy to use .
+
+In the course everybody will be expected to write simple template functions. These are best illustrated using an example. In C++ we could write a function to calculate the sum of all the entries in an array as follows:
+
+    int sum(int *a, int n) {
+        int partial_sum = 0;
+        for(int i=0; i<n; ++i) {
+            partial_sum += a[i];
+        }
+        return partial_sum;
+    }
+
+This implements the sum for an array of integers. What if we also want to work with an array of doubles? Function overloading allows us to write an equivalent function for doubles:
+
+    double sum(double *a, int n) {
+        double partial_sum = 0;
+        for(int i=0; i<n; ++i) {
+            partial_sum += a[i];
+        }
+        return partial_sum;
+    }
+
+This will automatically choose the correct implementation depending on whether a pointer to integer or pointer to double is passed when the function is called.
+
+The downside of this approach is that it doesn't scale: each time we want to support a new type we have to cut and paste a previous definition of our `sum` function, and reimplement it for the new type. If we discovered a better method for finding the sum, we would have to modify all of the implementations to use the new method: a time consuming and bug-prone approach.
+
+C++ templates provide a simple mechanism that allows us to write our `sum` function once in a generic manner, that describes how to 
+
+    template <typename T>
+    T sum(T *a, int n) {
+        T partial_sum = 0;
+        for(int i=0; i<n; ++i) {
+            partial_sum += a[i];
+        }
+        return partial_sum;
+    }
+
+It is quite simple: before our function definition we use the `template` keyword to indicate that we are going to define a template. The `<typename T>` indicates that we are going to use one generic type which we will call `T`. Think of `T` as being any type (i.e. `int`, `float`, `char`, `double` etc).
+
+#include <iostream>
+
+template <typename T>
+T sum(T *a, int n) {
+    T partial_sum = T(0);
+    for(int i=0; i<n; ++i) {
+        partial_sum += a[i];
+    }
+    return partial_sum;
+}
+
+int main(void) {
+    int    ints[]    = {1,2,3,4,5,6,7,8,9,10};
+    double doubles[] = {1.,2.,3.,4.,5.,6.,7.,8.,9.,10.};
+
+    auto sumi = sum<int>(ints, 10);
+    auto sumd = sum<double>(doubles, 10);
+
+    std::cout << sumi << " " << sumd << std::endl;
+}
+
+
+There are limitations to this approach. The most obvious is what if we tried to call our templated `sum` function with an array of types for which the `+` operator isn't defined? We will get a compiler error, most likely the error will be difficult to understand if you haven't got much C++ experience.
+
+

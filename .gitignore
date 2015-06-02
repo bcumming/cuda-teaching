@@ -8,4 +8,10 @@
 *.toc
 *.vrb
 
+# vim temp files
+*.swp
+*.swo
+*.swq
+*.swn
+
 cuda_introduction.pdf

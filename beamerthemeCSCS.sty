@@ -31,7 +31,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Block definitions
 
-\tcbset{arc=0.5mm,boxrule=0.4mm}
+\tcbset{arc=0.2mm,boxrule=0.2mm}
 
 \newenvironment<>{info}[1]{%
 \setbeamercolor{block title}{}%
@@ -52,8 +52,8 @@ title=#1]}{\end{tcolorbox}}
 \newenvironment<>{code}[1]{%
 \setbeamercolor{block title}{}%
 \begin{tcolorbox}[
-colback=white!15!black,
-colbacktitle=white!85!blue,
+colback=white!10!black,
+colbacktitle=white!100!black,
 colframe=black,
 coltitle=black,
 toptitle=1mm,
@@ -66,7 +66,28 @@ rightlower=1mm,
 top=-1mm,
 bottom=-1mm,
 boxsep=0mm,
-title=\centering \footnotesize \bfseries {#1}]}{\end{tcolorbox}}
+title=\centering \footnotesize {#1}]}{\end{tcolorbox}}
+
+\newenvironment<>{codecolumn}[1]{%
+\setbeamercolor{block title}{}%
+\begin{tcolorbox}[
+colback=white!10!black,
+colbacktitle=white!100!black,
+colframe=black,
+coltitle=black,
+toptitle=1mm,
+bottomtitle=1mm,
+lefttitle=3mm,
+leftupper=1mm,
+leftlower=1mm,
+rightupper=1mm,
+rightlower=1mm,
+top=-1mm,
+bottom=-1mm,
+boxsep=0mm,
+grow to left by=3mm,
+grow to right by=3mm,
+title=\centering \footnotesize {#1}]}{\end{tcolorbox}}
 
 \newenvironment<>{black0block}[1]{%
 \setbeamercolor{block title}{}%
