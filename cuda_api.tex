@@ -1,0 +1,162 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\cscschapter{Working with host and device memory}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Refering to host and device memory}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{info}{CUDA uses C pointers to reference GPU memory}
+        \begin{itemize}
+            \item it isn't possible to tell whether a pointer points to device or host
+            \item accessing a device pointer in host code is \emph{undefined behaviour}
+        \end{itemize}
+    \end{info}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Allocating Memory}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{info}{allocating memory on device}
+        \centering \lst{cudaMalloc(void **ptr, size_t size)}
+    \begin{itemize}
+        \item \lst{size} number of bytes to allocate
+        \item \lst{ptr} points to allocated memory on exit
+    \end{itemize}
+    \end{info}
+
+    \begin{info}{freeing memory on device}
+        \centering \lst{cudaFree(void *ptr)}
+    \end{info}
+
+    \begin{code}{allocate 100 doubles on device}
+%..................................
+        \begin{lstlisting}[style=boxcuda]
+double *v;
+int size_in_bytes = 100*sizeof(double);
+cudaMalloc(&v, size_in_bytes); // allocate memory
+cudaFree(v);                   // free memory
+\end{lstlisting}
+%..................................
+    \end{code}
+\end{frame}
+
+%%%%
+\begin{frame}[fragile]{Copying data}
+
+    \begin{info}{perform blocking copy (host waits for copy to finish)}
+        \centering \lst{cudaMemcpy(void *dst, void *src, size_t size, cudaMemcpyKind kind)}
+    \begin{itemize}
+        \item \lst{dst} destination pointer
+        \item \lst{src} source pointer
+        \item \lst{size} number of \emph{bytes} to copy to \lst{dst}
+        \item \lst{kind} enumerated type specifying \emph{direction} of copy:
+            \lst{cudaMemcpyHostToDevice}, also \lst{DeviceToHost}, \lst{DeviceToDevice}
+    \end{itemize}
+    \end{info}
+
+    \begin{code}{copy 100 doubles to device, then back to host}
+%..................................
+        \begin{lstlisting}[style=boxcuda]
+int size = 100*sizeof(double); // size in bytes
+double *v_d;
+cudaMalloc(&v_d, size);
+double *v_h = (double*)malloc(size);
+cudaMemcpy(v_d, v_h, size, cudaMemcpyHostToDevice);
+cudaMemcpy(v_h, v_d, size, cudaMemcpyDeviceToHost);
+\end{lstlisting}
+%..................................
+    \end{code}
+\end{frame}
+
+%%%%
+\begin{frame}[fragile]{Error handling}
+
+    \begin{info}{}
+        All API functions return error codes that indicate either:
+        \begin{itemize}
+            \item an error in the API call
+            \item an error in an earlier asynchronous call
+        \end{itemize}
+        The return value is the enum type \lst{cudaError_t}
+        \begin{itemize}
+            \item e.g. \lst{cudaError_t status = cudaMalloc(&v, 100);}
+            \begin{itemize}
+                \item status is \{\lst{cudaSuccess}, \lst{cudaErrorMemoryAllocation}\}
+            \end{itemize}
+        \end{itemize}
+    \end{info}
+
+    \begin{info}{Handling errors}
+        \centering \lst{const char* cudaGetErrorString(status)}
+        \begin{itemize}
+            \item returns a string describing status
+        \end{itemize}
+        \centering \lst{cudaError_t cudaGetLastError()}
+        \begin{itemize}
+            \item returns the last error
+            \item resets status to \lst{cudaSuccess}
+        \end{itemize}
+    \end{info}
+
+\end{frame}
+
+%%%%
+\begin{frame}[fragile]{Error handling}
+
+    \begin{code}{copy 100 doubles to device, with error checking}
+%..................................
+        \begin{lstlisting}[style=boxcuda]
+double *v_d;
+int size = sizeof(double)*100;
+double *v_host = (double*)malloc(size);
+cudaError_t status = cudaMalloc(&v_d, size);
+if(status != cudaSuccess) {
+  printf("cuda error : %s\n", cudaGetErrorString(status));
+  exit(1);
+}
+status =
+  cudaMemcpy(v_d, v_h, size, cudaMemcpyHostToDevice);
+if(status != cudaSuccess) {
+  printf("cuda error : %s\n", cudaGetErrorString(status));
+  printf("cuda error : %s\n", cudaGetErrorString(status));
+  exit(1);
+}
+        \end{lstlisting}
+%..................................
+    \end{code}
+
+    It is essential to test for errors
+    \begin{itemize}
+        \item but it gets tedious...
+    \end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Exercise: API Basics}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    Open \lst{cuda/exercises/util.h}
+    \begin{enumerate}
+        \item what does \lst{cude_check_error()} do?
+
+        \item Write a template wrapper around cudaMalloc to simplify allocating memory
+        \begin{itemize}
+            \item use the example for \lst{malloc_host} that is already implemented
+            \item remember to check for errors API errors.
+            \item what are the benefits over using \lst{cudaMalloc} directly?
+            \item do we need to write a similar function for \lst{cudaFree}?
+        \end{itemize}
+
+        \item Write a wrapper around \lst{cudaMemcpy} for copying data from host to device
+        \begin{itemize}
+            \item use the example for the reverse operation \lst{copy_device_to_host_sync}
+        \end{itemize}
+
+        \item Compile the test and run
+        \begin{itemize}
+            \item it will pass with no errors on success
+        \end{itemize}
+    \end{enumerate}
+
+\end{frame}
+

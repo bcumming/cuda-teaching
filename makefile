@@ -1,14 +1,15 @@
 LATEX=pdflatex
 #LATEX=lualatex
 
-all: cuda_introduction.pdf
+TEXFILES=cuda.tex cuda_introduction.tex cuda_threads.tex cuda_api.tex cuda_blocks.tex cuda_todo.tex
+all: cuda.pdf
 
-cuda_introduction.pdf: cuda_introduction.tex beamerthemeCSCS.sty
-	$(LATEX) cuda_introduction.tex
+cuda.pdf: $(TEXFILES) beamerthemeCSCS.sty
+	$(LATEX) cuda.tex
 
 force :
-	$(LATEX) cuda_introduction.tex
+	$(LATEX) cuda.tex
 
 clean:
-	rm -f cuda_introduction.pdf
+	rm -f cuda.pdf
 	rm -f *.aux *.dvi *.log *.nav *.out *.snm *.toc *.vrb

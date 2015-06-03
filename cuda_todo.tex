@@ -1,0 +1,85 @@
+% CHAPTER SLIDE
+\cscschapter{Working Asynchronously}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Asynchronous}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{info}{}
+        Section about asynchronous work
+        \begin{itemize}
+            \item how CUDA kernels are launched
+            \item \lst{cudaEvent_t} and \lst{cudaStream_t}
+            \item \lst{cudaMemcpyAsync}
+        \end{itemize}
+        Examples
+        \begin{itemize}
+            \item timing kernels with cuda events
+            \item host-device overlap
+        \end{itemize}
+    \end{info}
+
+\end{frame}
+
+% CHAPTER SLIDE
+\cscschapter{Going 2D}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{2D}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{info}{}
+        Section about launch configurations
+        \begin{itemize}
+            \item \lst{dim3}
+            \item using \lst{threadIdx.x/y/z} etc.
+        \end{itemize}
+        do 2D stencil example
+
+        Take the opportunity to talk about asynchronous communication and MPI
+    \end{info}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{coordination on SMX}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{info}{}
+        Section about using shared resources on an SMX in a thread block
+        \begin{itemize}
+            \item shared memory
+            \item \lst{__synch_threads()}
+        \end{itemize}
+        Two examples that stick to one thread block
+        \begin{itemize}
+            \item reverse string
+            \item dot product
+        \end{itemize}
+    \end{info}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Intermezzo: is this so hard?}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{info}{}
+        Each topic so far has not been too complicated:
+        \begin{itemize}
+            \item moving memory between host and device
+            \item writing kernels
+            \item parallel kernel launching
+        \end{itemize}
+        However, there is a lot that you have to keep in mind
+        \begin{itemize}
+            \item where is my data?
+            \item thinking in kernels
+            \item synchronization between threads, host/device?
+        \end{itemize}
+        Combined this makes GPU programming tough to start with.
+        It would be nice to have a high-level approach, but this is an open question
+        \begin{itemize}
+            \item I don't think that OpenACC and OpenMP are the answer
+        \end{itemize}
+    \end{info}
+
+\end{frame}
+
+

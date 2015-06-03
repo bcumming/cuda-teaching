@@ -1,0 +1,127 @@
+\documentclass[aspectratio=43]{beamer}
+% Theme works only with a 4:3 aspect ratio
+\usetheme{CSCS}
+
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+\usetikzlibrary{pgfplots.groupplots,spy}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{tcolorbox}
+\usepackage{anyfontsize}
+\usepackage{xspace}
+\usepackage{graphicx}
+
+% define footer text
+\newcommand{\footlinetext}{CUDA Introduction}
+
+% Select the image for the title page
+\newcommand{\picturetitle}{cscs_images/image5.pdf}
+
+% fonts for maths
+\usefonttheme{professionalfonts}
+\usefonttheme{serif}
+
+% source code listing
+\newcommand{\axpy}{{\ttfamily axpy}\xspace}
+\newcommand{\extra}{{\bfseries extra}:\xspace}
+\newcommand{\lst}[1]{\colorbox{white!90!blue}{\lstinline!#1!}}
+\newcommand{\lstfont}[1]{\color{#1}\scriptsize\ttfamily}
+\newcommand{\lsttinyfont}[1]{\color{#1}\fontsize{7}{7}\ttfamily}
+\newcommand{\lstinlinefont}[1]{\color{#1}\scriptsize\ttfamily}
+
+\lstset{
+    language=[ANSI]C++,
+    basicstyle=\lstinlinefont{blue!30!black},
+    breaklines=true
+}
+
+\definecolor{codenumber}{rgb}{0.5,0.5,0.5}
+\definecolor{codekeyword}{rgb}{0.9,0.4,0.7}
+\definecolor{codeCUDA}{rgb}{1.0,0.6,0.6}
+
+\lstdefinestyle{boxcuda}{
+    language=[ANSI]C++,
+    showstringspaces=false,
+    backgroundcolor=\color{white!10!black},
+    basicstyle=\lstfont{white},
+    identifierstyle=\lstfont{white},
+    keywordstyle=\lstfont{magenta!40!white},
+    numberstyle=\lstfont{white},
+    stringstyle=\lstfont{cyan},
+    commentstyle=\lstfont{yellow!30!white},
+    emph={
+        cudaMemcpy,
+        cudaMalloc,
+        cudaFree,
+        cudaMemcpyHostToDevice,
+        cudaMemcpyDeviceToHost,
+        cudaSuccess,
+        cudaGetLastError,
+        cudaGetErrorString,
+        cudaErrorMemoryAllocation,
+        cudaError_t,
+        __global__, __shared__, __device__, __host__,
+        threadIdx, blockIdx, blockDim, gridDim,
+    },
+    emphstyle={\lstfont{green!60!white}},
+    breaklines=true
+}
+
+\lstdefinestyle{boxcudatiny}{
+    language=[ANSI]C++,
+    showstringspaces=false,
+    backgroundcolor=\color{white!10!black},
+    basicstyle=\lsttinyfont{white},
+    identifierstyle=\lsttinyfont{white},
+    keywordstyle=\lsttinyfont{magenta!40!white},
+    numberstyle=\lsttinyfont{white},
+    stringstyle=\lsttinyfont{cyan},
+    commentstyle=\lsttinyfont{yellow!30!white},
+    emph={
+        cudaMemcpy,
+        cudaMalloc,
+        cudaFree,
+        cudaMemcpyHostToDevice,
+        cudaMemcpyDeviceToHost,
+        cudaSuccess,
+        cudaGetLastError,
+        cudaGetErrorString,
+        cudaErrorMemoryAllocation,
+        cudaError_t,
+        __global__, __shared__, __device__, __host__,
+        threadIdx, blockIdx, blockDim, gridDim,
+    },
+    emphstyle={\lstfont{green!60!white}},
+    breaklines=true
+}
+
+\DeclareTextFontCommand{\emph}{\bfseries}
+
+% Please use the predifined colors:
+% cscsred, cscsgrey, cscsgreen, cscsblue, cscsbrown, cscspurple, cscsyellow, cscsblack, cscswhite
+
+\author{Ben Cumming, CSCS}
+\title{Introduction to CUDA}
+\subtitle{Summer School 2015}
+\date{\today}
+
+\begin{document}
+
+% TITLE SLIDE
+\cscstitle
+
+% TABLE OF CONTENT SLIDE
+% All options for table of contents:
+% currentsection, currentsubsection, firstsection=xx, hideallsubsections, hideothersubsections, part=xx, pausesections, pausesubsections, sections=xx, sections={xx-yy}, sections={xx,yy}
+%\cscstableofcontents[hideallsubsections]{Title}
+
+%\input{cuda_introduction.tex}
+%\input{cuda_api.tex}
+%\input{cuda_threads.tex}
+\input{cuda_blocks.tex}
+%\input{cuda_todo.tex}
+
+\end{document}
+

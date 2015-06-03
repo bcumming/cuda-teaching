@@ -51,26 +51,26 @@ C++ templates provide a simple mechanism that allows us to write our `sum` funct
 
 It is quite simple: before our function definition we use the `template` keyword to indicate that we are going to define a template. The `<typename T>` indicates that we are going to use one generic type which we will call `T`. Think of `T` as being any type (i.e. `int`, `float`, `char`, `double` etc).
 
-#include <iostream>
+    #include <iostream>
 
-template <typename T>
-T sum(T *a, int n) {
-    T partial_sum = T(0);
-    for(int i=0; i<n; ++i) {
-        partial_sum += a[i];
+    template <typename T>
+    T sum(T *a, int n) {
+        T partial_sum = T(0);
+        for(int i=0; i<n; ++i) {
+            partial_sum += a[i];
+        }
+        return partial_sum;
     }
-    return partial_sum;
-}
 
-int main(void) {
-    int    ints[]    = {1,2,3,4,5,6,7,8,9,10};
-    double doubles[] = {1.,2.,3.,4.,5.,6.,7.,8.,9.,10.};
+    int main(void) {
+        int    ints[]    = {1,2,3,4,5,6,7,8,9,10};
+        double doubles[] = {1.,2.,3.,4.,5.,6.,7.,8.,9.,10.};
 
-    auto sumi = sum<int>(ints, 10);
-    auto sumd = sum<double>(doubles, 10);
+        auto sumi = sum<int>(ints, 10);
+        auto sumd = sum<double>(doubles, 10);
 
-    std::cout << sumi << " " << sumd << std::endl;
-}
+        std::cout << sumi << " " << sumd << std::endl;
+    }
 
 
 There are limitations to this approach. The most obvious is what if we tried to call our templated `sum` function with an array of types for which the `+` operator isn't defined? We will get a compiler error, most likely the error will be difficult to understand if you haven't got much C++ experience.

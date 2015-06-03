@@ -1,0 +1,178 @@
+% CHAPTER SLIDE
+\cscschapter{Going Parallel : Kernels and Threads}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{The CUDA Programming Model}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{info}{threads and kernels}
+        \begin{itemize}
+            \item \textbf{thread} are run simultaneously on GPU (1000s)
+            \item \textbf{kernel} is the task run by each thread
+            \item CUDA provides the means for
+            \begin{itemize}
+                \item writing kernels
+                \item launching many threads to execute parallel kernel
+            \end{itemize}
+            \begin{itemize}
+                \item it hides the low-level scheduling
+            \end{itemize}
+        \end{itemize}
+    \end{info}
+    \begin{info}{Porting to CUDA}
+        \begin{enumerate}
+            \item formulate algorithm in terms of parallel work items
+            \item write a cuda kernel which implements a work item
+            \item launch the kernel on as many threads as required
+        \end{enumerate}
+    \end{info}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Scaled Vector Addition (\axpy)}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{info}{}
+        The exercises use CUBLAS to perform scaled vector addition
+            \vspace{-10pt}
+            $$y = y + \alpha x$$
+            \vspace{-25pt}
+        \begin{itemize}
+            \item $x$ and $y$ are vectors of length $n$
+            \item $\alpha$ is scalar
+        \end{itemize}
+    \end{info}
+
+    \begin{code}{\axpy implemented with for loop}
+%..................................
+        \begin{lstlisting}[style=boxcuda]
+void axpy(double *y, double *x, double a, int n) {
+  for(int i=0; i<n; ++i)
+    y[i] = y[i] + a*x[i];
+}
+        \end{lstlisting}
+%..................................
+    \end{code}
+
+    \begin{info}{}
+        \axpy can be expressed into $n$ independent operations
+        $$y_i \leftarrow y_i + a*x_i,\quad i = {0, 1, \dots, n-1}$$
+        which can be performed independently and in any order
+    \end{info}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Writing A Kernel}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{info}{What is a kernel?}
+    \begin{itemize}
+        \item a kernel defines the work item for a single thread
+        \item the work is performed by many threads executing the same kernel \emph{simultaneously}
+        \item Conceptually corresponds to the inner part of a loop for BLAS1 operations like \axpy
+    \end{itemize}
+    \end{info}
+
+    \vspace{-10pt}
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            \begin{codecolumn}{host : add two vectors}
+%..................................
+        \begin{lstlisting}[style=boxcudatiny]
+
+void add_cpu(int *a, int *b, int n){
+  for(auto i=0; i<n; ++i)
+    a[i] += b[i];
+}
+        \end{lstlisting}
+%..................................
+            \end{codecolumn}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{codecolumn}{CUDA : add two vectors}
+%..................................
+        \begin{lstlisting}[style=boxcudatiny]
+__global__
+void add_gpu(int *a, int *b, int n){
+  auto i = threadIdx.x;
+  a[i] += b[i];
+}
+        \end{lstlisting}
+%..................................
+            \end{codecolumn}
+        \end{column}
+    \end{columns}
+
+    \vspace{-2pt}
+    \begin{info}{}
+    \begin{itemize}
+        \item \lst{__global__} keyword indicates a kernel that called from the host
+        \item \lst{ThreadIdx} used to find unique id of each thread
+    \end{itemize}
+    \end{info}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Launching a Kernel}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{info}{launching a kernel}
+    \begin{itemize}
+        \item host code launches a kernel on the GPU \emph{asyncronously}
+        \item CUDA provides special \lst{<<<_,_>>>} syntax for launching a kernel
+        \begin{itemize}
+            \item \lst{foo<<<1, num_threads>>>(args... )} will launch the kernel \lst{foo} with \lst{num_threads} parallel threads.
+        \end{itemize}
+    \end{itemize}
+    \end{info}
+
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            \begin{codecolumn}{host : add two vectors}
+%..................................
+        \begin{lstlisting}[style=boxcuda]
+auto n = 1024;
+auto a = host_malloc<int>(n);
+auto b = host_malloc<int>(n);
+add_cpu(a, b, n);
+        \end{lstlisting}
+%..................................
+            \end{codecolumn}
+        \end{column} \begin{column}{0.5\textwidth}
+            \begin{codecolumn}{CUDA : add two vectors}
+%..................................
+        \begin{lstlisting}[style=boxcuda]
+auto n = 1024;
+auto a = device_malloc<int>(n);
+auto b = device_malloc<int>(n);
+add_gpu<<<1,n>>>(a, b, n);
+        \end{lstlisting}
+%..................................
+            \end{codecolumn}
+        \end{column}
+    \end{columns}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Exercise: My First Kernel}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    Open \lst{cuda/exercises/axpy_kernel.h}
+
+    \begin{enumerate}
+        \item Write a kernel that implements \axpy for \lst{double}
+        \begin{itemize}
+            \item \lst{axpy_kernel(double *y, double *x, double a, int n)}
+            \item \extra can you write a C++ templated version for any type?
+        \end{itemize}
+
+        \item Replace the call to \lst{cublasDaxpy} with an invocation of your new kernel
+        \item Compile the test and run
+        \begin{itemize}
+            \item it will pass with no errors on success
+            \item first try with small vectors of size 8
+            \item try increasing launch size... what happens?
+        \end{itemize}
+        \item \extra can you extend the kernel to work for larger arrays?
+    \end{enumerate}
+\end{frame}
+
+
