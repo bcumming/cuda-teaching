@@ -93,7 +93,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     All kernels first calculate the index or position 
     \begin{itemize}
-        \item In \lst{axpy} we used the \emph{magic variable} \lst{threadIdx.x} for the index $i$
+        \item In \lst{axpy} we used \lst{threadIdx.x} for the index
         \item When using multiple blocks, we need more information, which is available in the following \emph{magic variables}:
 
     \end{itemize}
@@ -113,17 +113,165 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{Using Thread Blocks}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    Consider accessing an array of length 24 with 8 threads per block. The \emph{dimensions} of the kernel launch are:
+    \begin{itemize}
+        \item \lst{gridDim.x == 3} (3 blocks)
+        \item \lst{blockDim.x == 8} (8 threads/block)
+    \end{itemize}
+    We calculate the index for our thread using the formula
     \begin{center}
+        \lst{auto index = threadIdx.x + blockIdx.x*blockDim.x}
+        \\ \vspace{10pt}
         \includegraphics[width=\textwidth]{./images/blocks.pdf}
     \end{center}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Practicalities}
+\begin{frame}[fragile]{Using Thread Blocks}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    explain how to calculate the number of blocks and threads
+    \begin{info}{Computing block dimensions}
+        \begin{enumerate}
+            \item The number of thread blocks is calculated at the call site
+            \item Test in the kernel to guard against overflow when the number of work items is not divisible by the thread block size
+        \end{enumerate}
+    \end{info}
 
-    maybe how to optimize this?
+    \begin{code}{vector addition with multiple blocks}
+%..................................
+        \begin{lstlisting}[style=boxcudatiny]
+__global__
+void add_gpu(int *a, int *b, int n){
+  auto i = threadIdx.x + blockIdx.x*blockDim.x;
+  if(i<n) { // guard against access off end of arrays
+    a[i] += b[i];
+  }
+}
+
+// in main()
+auto block_size = 512;
+auto num_blocks = (n + (block_size-1)) / block_size;
+add_gpu<<<num_blocks, block_size>>(a, b, n);
+        \end{lstlisting}
+%..................................
+    \end{code}
 \end{frame}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Choosing Block Sizes}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{info}{The number of threads per block impacts performance}
+    \begin{itemize}
+        \item depends on the resources (registers, shared memory, etc) that a kernel requires
+        \item can be determined using trial and error
+    \end{itemize}
+    \end{info}
+
+    \begin{code}{choosing block size automatically (CUDA 6.5 and later)}
+%..................................
+        \begin{lstlisting}[style=boxcudatiny]
+int block_size, min_grid_dim;
+
+cudaOccupancyMaxPotentialBlockSize
+  (&min_grid_size, &block_size, add_gpu, 0, n);
+auto num_blocks = (n + (block_size-1)) / block_size;
+
+add_gpu<<<num_blocks, block_size>>(a, b, n);
+        \end{lstlisting}
+%..................................
+    \end{code}
+
+    \begin{info}{Occupancy}
+    The variable \lst{min_grid_size} is set to the minimum number of blocks required to \emph{saturate} the GPU, i.e. provide the GPU with enough work to utilize all of the SMXs.
+    \end{info}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Exercise: Blocks}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    Open \lst{cuda/exercises/axpy.cu} from the last exercise
+    \begin{enumerate}
+        \item Extend the \lst{axpy_gpu} function to work for arbitrarily large input arrays
+
+        \item Update the call site to calculate the grid configuration
+
+        \item Compile the test and run
+        \begin{itemize}
+            \item it will pass with no errors on success
+        \end{itemize}
+
+        \item Experiment with varying the size of the arrays (scaling)
+        \begin{itemize}
+            \item start small and increase
+            \item how does it affect the kernel execution time?
+        \end{itemize}
+
+        \item \extra Compare scaling with the \lst{axpy_omp} benchmark
+
+        \item \extra Experiment with varying the block size
+        \begin{itemize}
+            \item try \lst{block_size} calculated by \lst{cudaOccupancyMaxPotentialBlockSize}.
+        \end{itemize}
+
+    \end{enumerate}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Exercise: Results}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\begin{tikzpicture}
+%    \pgfplotsset{footnotesize}
+%    \begin{semilogyaxis}[
+%        height=0.7\textwidth,
+%        width=\textwidth,
+%        xmin=8,xmax=28,
+%        xtick={8,12,16,20,24,28},
+%        xlabel=$log_2(n)$,
+%        ylabel=time (s),
+%        legend style = {at={(0.05,0.95)}, anchor=north west},
+%        every axis y label/.style=
+%            {at={(ticklabel cs:0.5)},rotate=90,anchor=near ticklabel},
+%        grid=major]
+%        \addplot[color=blue,mark=*]  table[x=n,y=gpu]  {./plots/axpy.tbl};
+%        \addplot[color=red,mark=*]   table[x=n,y=omp1] {./plots/axpy.tbl};
+%        \addplot[color=green,mark=*] table[x=n,y=omp8] {./plots/axpy.tbl};
+%        \legend{CUDA, OpenMP 1, OpenMP 8};
+%    \end{semilogyaxis}
+%\end{tikzpicture}
+
+\begin{center}
+\begin{tikzpicture}
+    \pgfplotsset{footnotesize}
+    \begin{axis}[
+        height=0.4\textwidth,
+        width=\textwidth,
+        xmin=8,xmax=28,
+        ymin=0,ymax=6,
+        xtick={8,12,16,20,24,28},
+        ytick={0,1,2,3,4,5,6},
+        xlabel=$log_2(n)$,
+        ylabel=speedup,
+        legend style = {at={(0.05,0.95)}, anchor=north west},
+        every axis y label/.style=
+            {at={(ticklabel cs:0.5)},rotate=90,anchor=near ticklabel},
+        grid=major]
+        \addplot[color=blue,mark=*]  table[x=n,y expr=\thisrow{omp8}/\thisrow{gpu}]  {./plots/axpy.tbl};
+        \addplot[color=black,mark=*] table[x=n,y expr=\thisrow{omp8}/\thisrow{omp8}] {./plots/axpy.tbl};
+        \legend{CUDA speedup, OpenMP 8 thread};
+    \end{axis}
+\end{tikzpicture}
+\end{center}
+
+The GPU is a throughput device:
+\begin{itemize}
+\item the CUDA implementation is faster for $2^{15}\approx32,000$
+\item requires $2^{20}\approx1,000,000$ to get ``advertised'' $5\times$ speedup
+\end{itemize}
+You have to provide enough parallelism to exploit many cores
+
+\end{frame}
+
+% cudaOccupancyMaxPotentialBlockSize suggests block_dim 256-1024, depending on n
+% in practice it makes little difference
 

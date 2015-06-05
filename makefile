@@ -1,7 +1,7 @@
 LATEX=pdflatex
 #LATEX=lualatex
 
-TEXFILES=cuda.tex cuda_introduction.tex cuda_threads.tex cuda_api.tex cuda_blocks.tex cuda_todo.tex
+TEXFILES=cuda.tex cuda_introduction.tex cuda_threads.tex cuda_api.tex cuda_blocks.tex cuda_todo.tex cuda_local.tex
 all: cuda.pdf
 
 cuda.pdf: $(TEXFILES) beamerthemeCSCS.sty
