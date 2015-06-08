@@ -40,19 +40,19 @@
 \tikzstyle{core}=[draw, rectangle,  minimum height=\nodeheight, minimum width=\nodewidth, fill=blue!10,anchor=north west]
 \tikzstyle{res}=[draw, rectangle,  minimum height=\nodeheight, minimum width=\nodewidth, fill=yellow!20,anchor=north west]
 
-\node[core] (core0) at(0,0) {0};
-\node[core] (core1) [right = 1cm of core0] {1};
-\node[core] (core2) [right = 1cm of core1] {2};
-\node[core] (core3) [right = 1cm of core2] {3};
-\node[core] (core4) [right = 1cm of core3] {4};
-\node[core] (core5) [right = 1cm of core4] {5};
-\node[core] (core6) [right = 1cm of core5] {6};
-\node[core] (core7) [right = 1cm of core6] {7};
+\node[core] (core0) at(0,0) {\huge\textbf{0}};
+\node[core] (core1) [right = 1cm of core0] {\huge\textbf{1}};
+\node[core] (core2) [right = 1cm of core1] {\huge\textbf{2}};
+\node[core] (core3) [right = 1cm of core2] {\huge\textbf{3}};
+\node[core] (core4) [right = 1cm of core3] {\huge\textbf{4}};
+\node[core] (core5) [right = 1cm of core4] {\huge\textbf{5}};
+\node[core] (core6) [right = 1cm of core5] {\huge\textbf{6}};
+\node[core] (core7) [right = 1cm of core6] {\huge\textbf{7}};
 
-\node[res] (one0) [below = 1cm of core0] {+};
-\node[res] (one1) [below = 1cm of core2] {+};
-\node[res] (one2) [below = 1cm of core4] {+};
-\node[res] (one3) [below = 1cm of core6] {+};
+\node[res] (one0) [below = 1cm of core0] {\huge\textbf{+}};
+\node[res] (one1) [below = 1cm of core2] {\huge\textbf{+}};
+\node[res] (one2) [below = 1cm of core4] {\huge\textbf{+}};
+\node[res] (one3) [below = 1cm of core6] {\huge\textbf{+}};
 
 \path[pil,->] (core0.south)  edge (one0.north);
 \path[pil,->] (core1.south)  edge (one0.north);
@@ -63,15 +63,15 @@
 \path[pil,->] (core6.south)  edge (one3.north);
 \path[pil,->] (core7.south)  edge (one3.north);
 
-\node[res] (two0) [below = 1cm of one0] {+};
-\node[res] (two1) [below = 1cm of one2] {+};
+\node[res] (two0) [below = 1cm of one0] {\huge\textbf{+}};
+\node[res] (two1) [below = 1cm of one2] {\huge\textbf{+}};
 
 \path[pil,->] (one0.south)  edge (two0.north);
 \path[pil,->] (one1.south)  edge (two0.north);
 \path[pil,->] (one2.south)  edge (two1.north);
 \path[pil,->] (one3.south)  edge (two1.north);
 
-\node[res] (result) [below = 1cm of two0] {+};
+\node[res] (result) [below = 1cm of two0] {\huge\textbf{+}};
 
 \path[pil,->] (two0.south)  edge (result.north);
 \path[pil,->] (two1.south)  edge (result.north);

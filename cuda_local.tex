@@ -317,15 +317,42 @@ __global__ void blur_twice(double *in, double* out, int n) {
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Buffering with shared memory}
+\begin{frame}[fragile]{Optimizing for on-chip memory}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \begin{info}{notes}
+    \begin{info}{CPU}
         \begin{itemize}
-            \item Instead of leaving caching up to the hardware, on the GPU we manage shared memory
-            \item This gives more control, but can be hard
-            \item For CPUs we choose block sizes so that intermediate data will fit in a target cache (L1, L2 or L3)
-            \item For GPUs we choose thread block sizes so that intermediate data will fit in shared memory on an SMX
+            \item Let hardware prefetcher automatically manage cache
+            \item Choose block/tile sizes so that intermediate data will fit in a target cache (L1, L2 or L3)
         \end{itemize}
     \end{info}
+    \begin{info}{GPU}
+        \begin{itemize}
+            \item Manage shared memory manually
+            \begin{itemize}
+                \item more control!
+                \item time consuming (but implementing blocking on CPU is also painful)
+            \end{itemize}
+            \item Choose thread block sizes so that intermediate data will fit into shared memory on an SMX
+        \end{itemize}
+    \end{info}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Exercise: Shared Memory}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    Your task is to implement dot product in CUDA in \lst{cuda/exercises/dot.cu}.
+    \begin{itemize}
+        \item the host version has been implemented as \lst{dot_host()}
+        \item assume that $n$ is a power of 2 and $n\leq1024$
+    \end{itemize}
+
+    Extensions :
+    \begin{enumerate}
+        \item can you make it work for arbitrary $n<1024$?
+        \item how would you extend it to work for arbitrarily large $n$?
+    \end{enumerate}
+
+    \centering \includegraphics[width=0.5\textwidth]{./images/reduction.pdf}
 
 \end{frame}
