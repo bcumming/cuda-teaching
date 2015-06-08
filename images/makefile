@@ -1,8 +1,11 @@
-PDFS=smx_.pdf
+PDFS=smx.pdf reduction.pdf
 all: ${PDFS}
 
-smx_.pdf: smx.tex
+smx.pdf: smx.tex
 	pdflatex smx.tex
+
+reduction.pdf: reduction.tex
+	pdflatex reduction.tex
 
 clean:
 	rm -f ${PDFS}
