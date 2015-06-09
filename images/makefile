@@ -1,9 +1,12 @@
-PDFS=smx.pdf reduction.pdf blur_point_gather.pdf blur_point_scatter.pdf blur_point_shared.pdf
+PDFS=smx.pdf reduction.pdf blur_point_gather.pdf blur_point_scatter.pdf blur_point_shared.pdf core.pdf
 
 all: ${PDFS}
 
 smx.pdf: smx.tex
 	pdflatex smx.tex
+
+core.pdf: core.tex
+	pdflatex core.tex
 
 reduction.pdf: reduction.tex
 	pdflatex reduction.tex

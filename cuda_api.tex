@@ -2,6 +2,32 @@
 \cscschapter{Working with host and device memory}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
+%%%%
+\begin{frame}[fragile]{Device and Host Memory}
+    \begin{center}
+        \includegraphics[width=0.9\textwidth]{./images/node.pdf}
+    \end{center}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Device and Host Memory}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{info}{host and device have separate memory spaces}
+        \begin{itemize}
+            \item data must be copied between host and device memory via PCI
+            \item data must be in device memory for kernels to access
+            \item ensure data is in the right memory space \emph{before} computation starts
+                \begin{itemize}
+                    \item PCIe2 = 6-12 GB/s
+                    \item CPU socket = 35-50 GB/s
+                    \item K20X  = 180 GB/s
+                \end{itemize}
+        \end{itemize}
+    \end{info}
+
+\end{frame}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{Refering to host and device memory}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
