@@ -51,7 +51,7 @@
                   minimum height=\nodeheight, minimum width=\nodewidth,
                   fill=blue!10,
                   anchor=north west]
-\tikzstyle{nbuff}=[ draw=yellow,
+\tikzstyle{nbuff}=[ draw=red!50!yellow,
                   rectangle,
                   minimum height=\nodeheight, minimum width=\nodewidth,
                   fill=yellow!30,
@@ -82,8 +82,6 @@
 \node[nin]  (inp1) [right = 1cm of in]   {\vin{i+1}};
 \node[ninm] (inp2) [right = 1cm of inp1] {\vin{i+2}};
 
-\node[lab] (inlab) [draw, left = 1cm of inm2] {in};
-
 \node[nbuffm]  (buffm2) [below = 1cm of inm2] {\vout{i-2}};
 \node[nbuff]  (buffm1) [below = 1cm of inm1] {\vout{i-1}};
 \node[nbuff]  (buff)   [below = 1cm of in]   {\vout{i}};
@@ -100,9 +98,6 @@
 \node[nout]   (out)   [below = 1cm of buff]   {\vout{i}};
 \node[noutm]  (outp1) [below = 1cm of buffp1] {\vout{i+1}};
 
-\node[lab] (bufflab) [draw, below = 1cm of inlab] {shared};
-\node[lab] (outlab)  [draw, below = 1cm of bufflab] {out};
-
 \path[pil,->,white!80!black] (buffm2.south)  edge (outm1.north);
 \path[pil,->,white!80!black] (buffm1.south)  edge (outm1.north);
 \path[pil,->,white!80!black] (buff.south)    edge (outm1.north);
@@ -111,9 +106,15 @@
 \path[pil,->,white!80!black] (buffp1.south)  edge (outp1.north);
 \path[pil,->,white!80!black] (buff.south)    edge (outp1.north);
 
-\path[pil,->,red!50!yellow] (buff.south)  edge (out.north);
-\path[pil,->,red!50!yellow] (buffm1.south)  edge (out.north);
-\path[pil,->,red!50!yellow] (buffp1.south)  edge (out.north);
+\path[pil,->,green!50!black] (buff.south)  edge (out.north);
+\path[pil,->,green!50!black] (buffm1.south)  edge (out.north);
+\path[pil,->,green!50!black] (buffp1.south)  edge (out.north);
+
+\node[lab] (inlab) [draw, fill=blue!10, left = 1cm of inm2] {in};
+\node[lab] (bufflab) [draw, fill=yellow!10, below = 1cm of inlab] {shared};
+\node[lab] (outlab)  [draw, fill=green!10,  below = 1cm of bufflab] {out};
+\path[pil,->,black] (inlab.south)  edge (bufflab.north);
+\path[pil,->,black] (bufflab.south)  edge (outlab.north);
 
 
 \end{tikzpicture}

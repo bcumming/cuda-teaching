@@ -72,13 +72,13 @@
 \node[ninm]  (inp1) [right = 1cm of in]   {\vin{i+1}};
 \node[ninm] (inp2) [right = 1cm of inp1] {\vin{i+2}};
 
-\node[lab] (inlab) [fill=blue!20, left = 1cm of inm2] {in};
-
 \node[nout]  (outm1) [below = 1cm of inm1] {\vout{i-1}};
 \node[nout]   (out)   [below = 1cm of in]   {\vout{i}};
 \node[nout]  (outp1) [below = 1cm of inp1] {\vout{i+1}};
 
-\node[lab] (outlab) [fill=green!20, below = 1cm of inlab] {out};
+\node[lab] (inlab) [draw, fill=blue!10, left = 1cm of inm2] {in};
+\node[lab] (outlab) [draw, fill=green!10, below = 1cm of inlab] {out};
+\path[pil,->,black] (inlab.south)  edge (outlab.north);
 
 \path[pil,->,white!80!black] (inm2.south)  edge (outm1.north);
 \path[pil,->,white!80!black] (inm1.south)  edge (outm1.north);

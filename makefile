@@ -4,11 +4,14 @@ LATEX=pdflatex
 TEXFILES=cuda.tex cuda_introduction.tex cuda_threads.tex cuda_api.tex cuda_blocks.tex cuda_todo.tex cuda_local.tex
 all: cuda.pdf
 
-cuda.pdf: $(TEXFILES) beamerthemeCSCS.sty
+cuda.pdf: $(TEXFILES) beamerthemeCSCS.sty images
 	$(LATEX) cuda.tex
 
 force :
 	$(LATEX) cuda.tex
+
+images : images/*.tex
+	cd images; make;
 
 clean:
 	rm -f cuda.pdf

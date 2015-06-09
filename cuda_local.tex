@@ -56,12 +56,14 @@ void twice_blur(float *in, float *out, int n){
         \end{column}
 
         \begin{column}{0.7\textwidth}
+            \begin{info}{}
             CUDA provides mechanisms for cooperation between \emph{threads in a thread block}.
             \begin{itemize}
                 \item All threads in a block run on the same SMX
                 \item Resources for synchronization are at SMX level
                 \item No synchronization between blocks
             \end{itemize}
+            \end{info}
         \end{column}
     \end{columns}
 
@@ -71,25 +73,19 @@ void twice_blur(float *in, float *out, int n){
 \begin{frame}[fragile]{Sharing Between Threads}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %\begin{info}{}
-        Cooperation between threads requires sharing of results
+        Cooperation between threads requires sharing of data
         \begin{itemize}
-            \item All threads in a block can share data via \emph{shared memory}
-            \item Shared memory is extremely fast on-chip memory
-            \begin{itemize}
-                \item Much faster than performing transactions with global memory
-                \item Can be used as a user-configured cache
-            \end{itemize}
-            \item Shared memory data is \emph{not visible} to threads in other thread blocks
+            \item All threads in a block can share data using \emph{shared memory}
+            \item Shared memory is \emph{not visible} to threads in other thread blocks
         \end{itemize}
     %\end{info}
 
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Sharing Example : blur kernel}
+\begin{frame}[fragile]{Simple one-dimensional blur kernel}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    $\text{out}_i \leftarrow 0.25\times(2\times\text{in}_i+\text{in}_{i-1}+\text{in}_{i+1})$
-    \begin{info}{}
+    \begin{info}{Blur kernel : $\text{out}_i \leftarrow 0.25(\text{in}_{i-1}+2\text{in}_i+\text{in}_{i+1})$}
         \begin{itemize}
             \item each output value is a linear combination of neighbours in input array
             \item first we look at naiive implementation
@@ -109,9 +105,11 @@ void blur(double *in, double *out, int n){
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Blur kernel : no shared memory}
+\begin{frame}[fragile]{Blur kernel: simple GPU implementation}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    Our first implementation of the blur kernel has each thread load the three values required to form its output:
+    \begin{center}
+        The first implementation of the blur kernel has each thread load the three values required to form its output
+    \end{center}
     \begin{code}{First implementation of blur kernel}
         \begin{lstlisting}[style=boxcudatiny]
 __global__ void
@@ -125,12 +123,10 @@ blur(const double *in, double* out, int n) {
         \end{lstlisting}
     \end{code}
 
-    Have diagram showing the pattern
-
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Blur kernel : loading memory}
+\begin{frame}[fragile]{Blur kernel: memory access pattern}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \centering
     Each thread has to load 3 values from global memory to calculate its output \\
@@ -142,19 +138,7 @@ blur(const double *in, double* out, int n) {
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{Blur kernel : using shared memory}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \begin{itemize}
-        \item Each thread first loads one value from global memory into shared memory
-        \item Threads then perform gather on values in shared memory
-    \end{itemize}
-    \begin{center}
-        \includegraphics[width=0.8\textwidth]{./images/blur_point_shared.pdf}
-    \end{center}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Using Shared Memory in a Kernel}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    The kernel is split into two stages:
+    To take advantage of shared memory the kernel is split into two stages:
     \begin{enumerate}
         \item load \lst{in[i]} into shared memory \lst{buffer[i]}
         \begin{itemize}
@@ -163,22 +147,34 @@ blur(const double *in, double* out, int n) {
         \item use values \lst{buffer[i-1:i+1]} to compute kernel
     \end{enumerate}
 
+    \begin{center}
+        \includegraphics[width=0.8\textwidth]{./images/blur_point_shared.pdf}
+    \end{center}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Blur kernel: shared memory implementation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{code}{Blur kernel with shared memory}
         \begin{lstlisting}[style=boxcudatiny]
 __global__
-void blur_shared(double *in, double* out, int n) {
-  extern __shared__ double buffer[];
-  int i = threadIdx.x + 1;
+void blur_shared_block(double *in, double* out, int n) {
+    extern __shared__ double buffer[];
 
-  if(i<n-1) {
-    buffer[i] = in[i];
-    if(i==1) {
-      buffer[0] = in[0];
-      buffer[n] = in[n];
+    auto i = threadIdx.x + 1;
+
+    if(i<n-1) {
+        // load shared memory
+        buffer[i] = in[i];
+        if(i==1) {
+            buffer[0] = in[0];
+            buffer[n] = in[n];
+        }
+
+        __syncthreads();
+
+        out[i] = 0.25*(buffer[i-1] + 2.0*buffer[i] + buffer[i+1]);
     }
-    __syncthreads();
-    out[i] = 0.25*(buffer[i-1] -2.0*buffer[i] + buffer[i+1]);
-  }
 }
         \end{lstlisting}
     \end{code}
@@ -188,19 +184,22 @@ void blur_shared(double *in, double* out, int n) {
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{Using Shared Memory in a Kernel}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \begin{info}{declaring shared memory}
+    \begin{info}{Declaring shared memory}
         \centering \lst{extern __shared__ double buffer[];}
         \begin{itemize}
             \item the size of memory to be allocated is specified when the kernel is launched
         \end{itemize}
     \end{info}
 
-    \begin{info}{synchronizing threads}
+    \begin{info}{Synchronizing threads}
         \centering \lst{__syncthreads();}
         \begin{itemize}
             \item threads wait for all threads in thread block to finish loading shared memory buffer
             \item thread $i$ needs to wait for threads $i-1$ and $i+1$ to load values into \lst{buffer}
-            \item without synchronization we would have race conditions
+            \item synchronization required to avoid race conditions
+            \begin{itemize}
+                \item threads have to wait for other threads to fill \lst{buffer}
+            \end{itemize}
         \end{itemize}
     \end{info}
 
@@ -209,7 +208,7 @@ void blur_shared(double *in, double* out, int n) {
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{Launching Kernel With Shared Memory}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \begin{info}{specifying shared memory allocation}
+    \begin{info}{Specifying shared memory allocation}
         an additional parameter is added to the launch syntax\\
         \centering \lst{blur<<<grid_dim, block_dim, shared_size>>>(...);}
         \begin{itemize}
@@ -217,7 +216,7 @@ void blur_shared(double *in, double* out, int n) {
         \end{itemize}
     \end{info}
 
-    \begin{code}{Blur kernel with shared memory}
+    \begin{code}{Launch blur kernel with shared memory}
         \begin{lstlisting}[style=boxcudatiny]
 __global__
 void blur_shared(double *in, double* out, int n) {
@@ -255,7 +254,7 @@ blur_shared<<<1, block_dim, size_in_bytes>>>(x0, x1, n);
 \begin{frame}[fragile]{Buffering with shared memory}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{info}{}
-        Shared memory is important for caching intermediate results used in piplelined operations
+        Shared memory is important for caching intermediate results used in pipelined operations
         \begin{itemize}
             \item Shared memory is an order of magnitude faster than global DRAM
             \item By \emph{fusing} pipelined operations in one kernel, intermediate results can be stored in shared memory
@@ -263,14 +262,20 @@ blur_shared<<<1, block_dim, size_in_bytes>>>(x0, x1, n);
         \end{itemize}
     \end{info}
 
-    \begin{code}{apply the blur kernel twice}
+
+    \begin{code}{double blur: basic OpenMP}
         \begin{lstlisting}[style=boxcudatiny]
-void twice_blur(float *in, float *out, int n){
-  float buff[n];
-  for(auto i=1; i<n-1; ++i)
-    buff[i] = 0.25f*(in[i-1]+in[i+1]+2f*in[i]);
-  for(auto i=2; i<n-2; ++i)
-    out[i] = 0.25f*(buff[i-1]+buff[i+1]+2f*buff[i]);
+void blur_twice(const double* in , double* out , int n) {
+  static double* buffer = malloc_host<double>(n);
+
+  #pragma omp parallel for
+  for(auto i=1; i<n-1; ++i) {
+    buffer[i] = 0.25*( in[i-1] + 2.0*in[i] + in[i+1]);
+  }
+  #pragma omp parallel for
+  for(auto i=2; i<n-2; ++i) {
+    out[i] = 0.25*( buffer[i-1] + 2.0*buffer[i] + buffer[i+1]);
+  }
 }
         \end{lstlisting}
     \end{code}
@@ -280,62 +285,96 @@ void twice_blur(float *in, float *out, int n){
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{Fused loops on the host}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    For a host implementation break work into blocks, to keep intermediate results in \lst{buffer} in cache.
-    \begin{code}{apply the blur kernel twice : CPU implementation}
+    %For a host implementation break work into blocks, to keep intermediate results in \lst{buffer} in cache.
+    \begin{code}{double blur: OpenMP with blocking for cache}
         \begin{lstlisting}[style=boxcudatiny]
-// assume that (n-4)%block_size == zero
-void twice_blur(float *in, float *out, int n){
-  auto const num_blocks = 8;
-  auto const block_size = (n-4)/num_blocks;
-  auto first = 2, last = first+block_size;
+void blur_twice(const double* in , double* out , int n) {
+  auto const block_size = std::min(512, n-4);
+  auto const num_blocks = (n-4)/block_size;
+  static double* buffer = malloc_host<double>((block_size+4)*omp_get_max_threads());
 
-  float buff[block_size+2]; // buffer for one block
-  auto blur = [] (int j, double* u) {
-    return 0.25*(u[j-1] +2.0*u[j] + u[j+1]);
+  auto blur = [] (int pos, const double* u) {
+    return 0.25*( u[pos-1] + 2.0*u[pos] + u[pos+1]);
   };
 
+  #pragma omp parallel for
   for(auto b=0; b<num_blocks; ++b) {
-    for(auto i=first-1, j=1; i<last+1; ++i, ++j)
+    auto tid = omp_get_thread_num();
+    auto first = 2 + b*block_size;
+    auto last = first + block_size;
+
+    auto buff = buffer + tid*(block_size+4);
+    for(auto i=first-1, j=1; i<(last+1); ++i, ++j) {
       buff[j] = blur(i, in);
-    for(auto i=first, j=2; i<last; ++i, ++j)
-      out[j] = blur(j, buff);
-    first += block_size;
-    last  += block_size;
+    }
+    for(auto i=first, j=2;   i<last;   ++i, ++j) {
+      out[i] = blur(j, buff);
+    }
   }
 }
         \end{lstlisting}
     \end{code}
-    \emph{Note} that these sorts of optimizations are not only messy on the GPU!
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{Fused loops on the GPU}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \begin{code}{apply the blur kernel twice : GPU implementation}
+    \begin{code}{double blur: CUDA with shared memory}
         \begin{lstlisting}[style=boxcudatiny]
-__global__ void blur_twice(double *in, double* out, int n) {
+__global__ void blur_twice(const double *in, double* out, int n) {
   extern __shared__ double buffer[];
-  int i = threadIdx.x + 2;
 
-  auto blur = [] (int j, double* u) {
-    return 0.25*(u[j-1] +2.0*u[j] + u[j+1]);
+  auto block_start = blockDim.x * blockIdx.x;
+  auto block_end   = block_start + blockDim.x;
+  auto lid = threadIdx.x + 2;
+  auto gid = lid + block_start;
+
+  auto blur = [] (int pos, double const* field) {
+    return 0.25*(field[pos-1] + 2.0*field[pos] + field[pos+1]);
   };
 
-  if(i<n-2) {
-      buffer[i] = blur(i, in);
-      if(i==2) {
-          buffer[1] = blur(1, in);
-          buffer[n-2] = blur(n-2, in);
-      }
+  if(gid<n-2) {
+    buffer[li] = blur(gi, in);
+    if(threadIdx.x==0) {
+        buffer[1]            = blur(block_start+1, in);
+        buffer[blockDim.x+2] = blur(block_end+2, in);
+    }
 
-      __syncthreads();
+    __syncthreads();
 
-      out[i] = in[i] + blur(i, buffer);
+    out[gi] = blur(li, buffer);
   }
 }
         \end{lstlisting}
     \end{code}
-    \emph{Note} this is not much more complex than the cache-aware implementation!
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Fused loop results}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{info}{Implementation}
+        The cache-aware host version was harder to implement than CUDA
+        \begin{itemize}
+            \item CUDA just seems harder because it makes us write in parallel from the start
+        \end{itemize}
+    \end{info}
+
+    \begin{info}{Performance : $n=2^{22}\approx4.2$~million}
+        Memory optimizations are important for both the CPU and GPU.
+        \begin{itemize}
+            \item OpenMP version with 8 threads : 2.8$\times$ faster
+            \begin{itemize}
+                \item na\"ive  $7.37\times10^{-3}$~s
+                \item fused    $2.66\times10^{-3}$~s
+            \end{itemize}
+            \item CUDA version : 1.47$\times$ faster
+            \begin{itemize}
+                \item na\"ive $7.89\times10^{-4}$~s
+                \item fused $5.34\times10^{-4}$~s
+            \end{itemize}
+        \end{itemize}
+    \end{info}
+
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
