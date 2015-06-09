@@ -15,5 +15,4 @@
 *.swn
 
 cuda.pdf
-images/smx.pdf
-images/reduction.pdf
+images/*.pdf

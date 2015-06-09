@@ -130,6 +130,28 @@ blur(const double *in, double* out, int n) {
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Blur kernel : loading memory}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \centering
+    Each thread has to load 3 values from global memory to calculate its output \\
+    \includegraphics[width=0.8\textwidth]{./images/blur_point_gather.pdf} \\
+    Alternatively, each value in the input array has to be loaded 3 times \\
+    \includegraphics[width=0.8\textwidth]{./images/blur_point_scatter.pdf} \\
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Blur kernel : using shared memory}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{itemize}
+        \item Each thread first loads one value from global memory into shared memory
+        \item Threads then perform gather on values in shared memory
+    \end{itemize}
+    \begin{center}
+        \includegraphics[width=0.8\textwidth]{./images/blur_point_shared.pdf}
+    \end{center}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{Using Shared Memory in a Kernel}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     The kernel is split into two stages:
