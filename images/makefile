@@ -1,4 +1,4 @@
-PDFS=smx.pdf reduction.pdf blur_point_gather.pdf blur_point_scatter.pdf blur_point_shared.pdf core.pdf
+PDFS=smx.pdf reduction.pdf blur_point_gather.pdf blur_point_scatter.pdf blur_point_shared.pdf core.pdf async_null.pdf
 
 all: ${PDFS}
 
@@ -19,6 +19,9 @@ blur_point_scatter.pdf: blur_point_scatter.tex
 
 blur_point_shared.pdf: blur_point_shared.tex
 	pdflatex blur_point_shared.tex
+
+async_null.pdf: async_null.tex
+	pdflatex async_null.tex
 
 clean:
 	rm -f ${PDFS}

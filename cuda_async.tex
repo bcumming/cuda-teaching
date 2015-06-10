@@ -1,0 +1,195 @@
+%++++++++++++++++++++++++++++++++
+\cscschapter{Managing Asynchronous Work}
+%++++++++++++++++++++++++++++++++
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Asynchronouse execution}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    Explain that tasks can be launched asynchronously
+
+    benefits:
+    \begin{itemize}
+        \item host can continue work while GPU works
+        \item multiple tasks can be run on GPU simultaneously
+    \end{itemize}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Asynchronouse execution}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            \begin{codecolumn}{host : launch work}
+%..................................
+        \begin{lstlisting}[style=boxcudatiny]
+kernel_1<<<...>>>(...);
+kernel_2<<<...>>>(...);
+host_1(...);
+host_2(...);
+        \end{lstlisting}
+%..................................
+            \end{codecolumn}
+        The host:
+        \begin{itemize}
+            \item launches the two CUDA kernels
+            \item then executes host calls sequentially 
+        \end{itemize}
+        The GPU:
+        \begin{itemize}
+            \item executes asynchronously to host
+            \item executes kernels sequentially
+        \end{itemize}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{info}{execution}
+                \includegraphics[width=\textwidth]{./images/async_null.pdf}
+            \end{info}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{CUDA Asynchronous support}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    CUDA provides mechansims that facilitate asynchronous work
+
+    \begin{itemize}
+        \item streams for running tasks/data transfers
+        \item events let you synchronize and query the status of execution
+    \end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Streams}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    CUDA allows us to create streams
+
+    All kernels in a stream are serialized
+
+    kernels in different streams can run concurrently
+    \begin{itemize}
+        \item if there are resources available
+    \end{itemize}
+
+    By default, all kernels and memory transfers use the default stream
+    i.e. by default kernels are serialized on the device
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Streams}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    How to create a stream
+
+    How to kill a stream
+
+    How to call a kernel with a stream
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Streams : rule of thumb}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    Ideally you don't want to use streams to fill the device with work.
+    \begin{itemize}
+        \item a sign that you don't have enough work to start with
+        \item not a hard and fast rule
+        \item good for ``filling in'' between kernel executions
+    \end{itemize}
+
+    Streams come into their own for overlapping communication and computation
+    \begin{itemize}
+        \item because you can transfer data full speed both directions when kernels are executing on the GPU
+    \end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Events}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    CUDA provides events
+    \begin{itemize}
+        \item synchronize tasks in different streams:
+        \begin{itemize}
+            \item don't start work in stream A until stream B has finished.
+            \item wait until required data has finished copy from host before launching kernel
+        \end{itemize}
+        \item allow us to query status of concurrent tasks
+        \begin{itemize}
+            \item has kernel finished/started yet?
+            \item how long did a kernel take to compute?
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Events}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    How to create and event
+
+    How to destroy an event
+
+    How to insert an event into a stream
+
+    How to make a stream wait on an event
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Events : timing example}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    timing kernel execution on GPU requires events
+
+    code
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Events : copy-kernel synchronization example}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    code
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Asynchronous copy}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \lst{cudaMemcpyAsync}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Exercises}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{itemize}
+        \item time to visit \lst{util.h} and add helpers for asynchronous copy
+        \item just give the event and stream wrappers ``as is''
+        \begin{itemize}
+            \item walk through their use in the memcpy example
+        \end{itemize}
+        \item fire up nvprof
+    \end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Asynchronous example: streaming}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    Streaming is a workload where we can break data and work into chunks
+    \begin{itemize}
+        \item work on one chunk of data while the next chunk is being sent
+        \item send each chunk back to host and take next available chunk of work
+        \item there has to be enough work in each chunk to hide ...
+    \end{itemize}
+
+    Take, for example our axpy example...
+    \begin{itemize}
+        \item clearly no amount of overlap will help us
+        \item note that we get full speed both directions
+    \end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Asynchronous example: streaming}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    Show Newton kernel : lotsa work
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Exercises}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    Overlapping work for Newton
+\end{frame}
