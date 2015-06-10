@@ -16,19 +16,17 @@
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Asynchronouse execution}
+\begin{frame}[fragile]{Asynchronouse execution example}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{columns}[T]
         \begin{column}{0.5\textwidth}
-            \begin{codecolumn}{host : launch work}
-%..................................
-        \begin{lstlisting}[style=boxcudatiny]
+            \begin{codecolumn}{host code}
+                \begin{lstlisting}[style=boxcudatiny]
 kernel_1<<<...>>>(...);
 kernel_2<<<...>>>(...);
 host_1(...);
 host_2(...);
-        \end{lstlisting}
-%..................................
+                \end{lstlisting}
             \end{codecolumn}
         The host:
         \begin{itemize}
@@ -50,14 +48,23 @@ host_2(...);
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{CUDA Asynchronous support}
+\begin{frame}[fragile]{CUDA Support for Asynchronous Execution}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    CUDA provides mechansims that facilitate asynchronous work
+    The CUDA language and runtime libraries provide mechanisms for coordinating asynchronous GPU execution
 
-    \begin{itemize}
-        \item streams for running tasks/data transfers
-        \item events let you synchronize and query the status of execution
-    \end{itemize}
+    \begin{info}{streams}
+        \begin{itemize}
+            \item CUDA streams 
+            \item
+        \end{itemize}
+    \end{info}
+
+    \begin{info}{events}
+        \begin{itemize}
+            \item
+            \item
+        \end{itemize}
+    \end{info}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -79,11 +86,28 @@ host_2(...);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{Streams}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    How to create a stream
+    The \lst{cudaStream_t} type (an integer) is used to specify the stream.
+    \begin{itemize}
+        \item \lst{cudaStreamCreate(cudaStream_t* s)} creates a new stream, and stores the stream id in \lst{s}.
+        \item \lst{cudaStreamDestroy(cudaStream_t s)} frees resources for the stream with id \lst{s}.
+        \item To launch a kernel on a stream specify the stream id as a fourth parameter to the launch syntax \\ \lst{<<<grid, block, shared_size, stream>>>}
+        \begin{itemize}
+            \item by default the \emph{NULL stream} is passed
+        \end{itemize}
+    \end{itemize}
 
-    How to kill a stream
+    \begin{code}{basic cuda stream useage}
+        \begin{lstlisting}[style=boxcudatiny]
+// create stream
+cudaStream_t stream;
+cudaStreamCreate(&stream);
+// launch kernel in stream
+my_kernel<<<grid_dim, block_dim, shared_size, stream>>>(..)
+// release stream when finished
+cudaStreamDestroy(stream);
+        \end{lstlisting}
+\end{code}
 
-    How to call a kernel with a stream
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

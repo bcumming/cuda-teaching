@@ -49,10 +49,11 @@
                   fill=green!30,
                   anchor=north west]
 
+\node[rectangle] (CPUlabel)  at(1cm,0.1cm) [anchor=south] {\color{blue!50!black}{host}};
+\node[rectangle] (GPUlabel)  at(3.5cm,0.1cm) [anchor=south] {\color{green!50!black}{GPU}};
+
 \node[cpukernel] (launch1) at(0,0) [minimum height=0.25cm] {\tiny launch};
 \node[cpukernel] (launch2) [below = 0.05cm of launch1, minimum height=0.25cm] {\tiny launch};
-%\draw[decorate, decoration={brace,amplitude=3pt},xshift=-0.05cm]
-        %(0cm,-0.55cm) -- (0cm,0cm) node [black,midway,xshift=-0.5cm] {\footnotesize launch};
 
 \node[cpukernel] (host1)   [below = 0.05cm of launch2, minimum height=1cm] {host\_1};
 \node[cpukernel] (host2)   [below = 0.05cm of host1,   minimum height=2cm] {host\_2};
@@ -60,6 +61,8 @@
 \node[gpukernel] (kernel1) at(2.5cm,-0.25cm) [minimum height=2cm] {kernel\_1};
 \node[gpukernel] (kernel2)  [below = 0.05cm of kernel1, minimum height=3cm] {kernel\_2};
 
+\path[pil,->,black!70,dashed] (2.25cm,0.25cm)  edge (2.25cm, -5.5cm);
+\node[rectangle] (timelabel)  at(2.25cm,-5.5cm) [anchor=north] {\footnotesize time};
 
 \path[pil,->,black] (launch1.east)  edge (kernel1.north west);
 \path[pil,->,black] (launch2.east)  edge (kernel2.north west);
