@@ -33,7 +33,7 @@
 \newcommand{\lstinlinefont}[1]{\color{#1}\scriptsize\ttfamily}
 
 % set indent to a more reasonable level (so that itemize can be used in columns)
-\setlength{\leftmargini}{10pt}
+\setlength{\leftmargini}{20pt}
 
 %\lstset{
 %    language=[ANSI]C++,
@@ -52,7 +52,7 @@
     commentstyle=\lstfont{yellow!30!white},
     emph={
         cudaMalloc, cudaFree,
-        cudaMemcpy, cudaMemcpyHostToDevice, cudaMemcpyDeviceToHost,
+        cudaMemcpyAsync, cudaMemcpy, cudaMemcpyHostToDevice, cudaMemcpyDeviceToHost,
         cudaSuccess, cudaGetLastError, cudaGetErrorString,
         cudaErrorMemoryAllocation, cudaError_t,
         cudaOccupancyMaxPotentialBlockSize,
@@ -81,7 +81,7 @@
     commentstyle=\lstfont{yellow!30!white},
     emph={
         cudaMalloc, cudaFree,
-        cudaMemcpy, cudaMemcpyHostToDevice, cudaMemcpyDeviceToHost,
+        cudaMemcpyAsync, cudaMemcpy, cudaMemcpyHostToDevice, cudaMemcpyDeviceToHost,
         cudaSuccess, cudaGetLastError, cudaGetErrorString,
         cudaErrorMemoryAllocation, cudaError_t,
         cudaOccupancyMaxPotentialBlockSize,
@@ -106,7 +106,7 @@
     commentstyle=\lsttinyfont{yellow!30!white},
     emph={
         cudaMalloc, cudaFree,
-        cudaMemcpy, cudaMemcpyHostToDevice, cudaMemcpyDeviceToHost,
+        cudaMemcpyAsync, cudaMemcpy, cudaMemcpyHostToDevice, cudaMemcpyDeviceToHost,
         cudaSuccess, cudaGetLastError, cudaGetErrorString,
         cudaErrorMemoryAllocation, cudaError_t,
         cudaOccupancyMaxPotentialBlockSize,
@@ -119,7 +119,7 @@
     breaklines=true
 }
 
-\DeclareTextFontCommand{\emph}{\bfseries}
+\DeclareTextFontCommand{\emph}{\bfseries\color{blue!70!black}}
 
 % Please use the predifined colors:
 % cscsred, cscsgrey, cscsgreen, cscsblue, cscsbrown, cscspurple, cscsyellow, cscsblack, cscswhite
@@ -143,8 +143,8 @@
 %\input{cuda_api.tex}
 %\input{cuda_threads.tex}
 %\input{cuda_blocks.tex}
-\input{cuda_local.tex}
-%\input{cuda_async.tex}
+%\input{cuda_local.tex}
+\input{cuda_async.tex}
 %\input{cuda_todo.tex}
 
 \end{document}

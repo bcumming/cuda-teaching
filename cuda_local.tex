@@ -3,39 +3,6 @@
 %++++++++++++++++++++++++++++++++
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Block-Level Synchronization}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-%    \begin{info}{Performance : $n=2^{22}\approx4.2$~million}
-%        Memory optimizations are important for both the CPU and GPU.
-%        \begin{itemize}
-%            \item OpenMP version with 8 threads : 2.8$\times$ faster
-%            \begin{itemize}
-%                \item na\"ive  $7.37\times10^{-3}$~s
-%                \item fused    $2.66\times10^{-3}$~s
-%            \end{itemize}
-%            \item CUDA version : 1.47$\times$ faster
-%            \begin{itemize}
-%                \item na\"ive $7.89\times10^{-4}$~s
-%                \item fused $5.34\times10^{-4}$~s
-%            \end{itemize}
-%        \end{itemize}
-%    \end{info}1940
-    \begin{tikzpicture}
-        \begin{axis}[ybar, height=0.4\textwidth, width=\textwidth, xmin=0, xmax=6]
-        \addplot
-            [draw=blue, fill=blue!30, bar width=1cm]
-            coordinates {(1,5) (4,2)};
-
-        \addplot
-            [draw=green, fill=green!30, bar width=1cm]
-            coordinates {(2,3) (5,1)};
-        \end{axis}
-    \end{tikzpicture}
-
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{Cooperation Between Threads}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \centering
@@ -385,12 +352,69 @@ __global__ void blur_twice(const double *in, double* out, int n) {
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{Fused loop results}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \begin{info}{Implementation}
-        The cache-aware host version was harder to implement than CUDA
+    \begin{info}{}
+        The OpenMP cache-aware version was harder to implement than the shared-memory CUDA version
         \begin{itemize}
-            \item CUDA just seems harder because it makes us write in parallel from the start
+            \item CUDA is harder to start because it makes us to think in parallel always
         \end{itemize}
+        Both implementations benefit significantly from optimizations for fast on chip memory
     \end{info}
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            \centering
+            \begin{tikzpicture}
+                \begin{axis}[
+                    ybar,
+                    height=0.7\textwidth,
+                    width=\textwidth,
+                    ymin=0,
+                    ticks=none,
+                    title={openmp},
+                    title style={yshift=-1.5ex}
+                ]
+                \addplot
+                    [draw=black, fill=blue!30, bar width=1cm]
+                    coordinates {(1,7.37e-3)};
+                \addplot
+                    [draw=black, fill=green!30, bar width=1cm]
+                    coordinates {(1,2.66e-3)};
+                \node[right] at (axis cs:1,0.005) {2.8$\times$};
+                \node[above left] at (axis cs:1,0) {\footnotesize7.4e-3};
+                \node[above right] at (axis cs:1,0) {\footnotesize2.7e-3};
+                %\legend{\tiny na\"ive, \tiny optimized};
+                \end{axis}
+            \end{tikzpicture}
+        \end{column}
+
+        \begin{column}{0.5\textwidth}
+            \centering
+            \begin{tikzpicture}
+                \begin{axis}[
+                    ybar,
+                    height=0.7\textwidth,
+                    width=\textwidth,
+                    ymin=0,
+                    ticks=none,
+                    title={cuda},
+                    title style={yshift=-1.5ex}
+                ]
+
+                \addplot
+                   [draw=black, fill=blue!30, bar width=1cm]
+                    coordinates {(1,7.89e-4)};
+                \addplot
+                   [draw=black, fill=green!30, bar width=1cm]
+                    coordinates {(1,5.35e-4)};
+                \node[right] at (axis cs:1,0.0007) {1.5$\times$};
+                \node[above left] at (axis cs:1,0) {\footnotesize7.9e-4};
+                \node[above right] at (axis cs:1,0) {\footnotesize5.4e-4};
+                %\legend{\tiny na\"ive, \tiny optimized};
+                \end{axis}
+            \end{tikzpicture}
+        \end{column}
+    \end{columns}
+
+
 
 \end{frame}
 

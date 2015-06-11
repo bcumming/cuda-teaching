@@ -1,4 +1,4 @@
-PDFS=smx.pdf reduction.pdf blur_point_gather.pdf blur_point_scatter.pdf blur_point_shared.pdf core.pdf async_null.pdf async_two_streams.pdf
+PDFS=smx.pdf reduction.pdf blur_point_gather.pdf blur_point_scatter.pdf blur_point_shared.pdf core.pdf async_null.pdf async_two_streams.pdf  overlap.pdf
 
 all: ${PDFS}
 
@@ -25,6 +25,9 @@ async_null.pdf: async_null.tex
 
 async_two_streams.pdf: async_two_streams.tex
 	pdflatex async_two_streams.tex
+
+overlap.pdf: overlap.tex
+	pdflatex overlap.tex
 
 clean:
 	rm -f ${PDFS}
