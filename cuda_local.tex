@@ -3,6 +3,39 @@
 %++++++++++++++++++++++++++++++++
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Block-Level Synchronization}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%    \begin{info}{Performance : $n=2^{22}\approx4.2$~million}
+%        Memory optimizations are important for both the CPU and GPU.
+%        \begin{itemize}
+%            \item OpenMP version with 8 threads : 2.8$\times$ faster
+%            \begin{itemize}
+%                \item na\"ive  $7.37\times10^{-3}$~s
+%                \item fused    $2.66\times10^{-3}$~s
+%            \end{itemize}
+%            \item CUDA version : 1.47$\times$ faster
+%            \begin{itemize}
+%                \item na\"ive $7.89\times10^{-4}$~s
+%                \item fused $5.34\times10^{-4}$~s
+%            \end{itemize}
+%        \end{itemize}
+%    \end{info}1940
+    \begin{tikzpicture}
+        \begin{axis}[ybar, height=0.4\textwidth, width=\textwidth, xmin=0, xmax=6]
+        \addplot
+            [draw=blue, fill=blue!30, bar width=1cm]
+            coordinates {(1,5) (4,2)};
+
+        \addplot
+            [draw=green, fill=green!30, bar width=1cm]
+            coordinates {(2,3) (5,1)};
+        \end{axis}
+    \end{tikzpicture}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{Cooperation Between Threads}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \centering
@@ -356,22 +389,6 @@ __global__ void blur_twice(const double *in, double* out, int n) {
         The cache-aware host version was harder to implement than CUDA
         \begin{itemize}
             \item CUDA just seems harder because it makes us write in parallel from the start
-        \end{itemize}
-    \end{info}
-
-    \begin{info}{Performance : $n=2^{22}\approx4.2$~million}
-        Memory optimizations are important for both the CPU and GPU.
-        \begin{itemize}
-            \item OpenMP version with 8 threads : 2.8$\times$ faster
-            \begin{itemize}
-                \item na\"ive  $7.37\times10^{-3}$~s
-                \item fused    $2.66\times10^{-3}$~s
-            \end{itemize}
-            \item CUDA version : 1.47$\times$ faster
-            \begin{itemize}
-                \item na\"ive $7.89\times10^{-4}$~s
-                \item fused $5.34\times10^{-4}$~s
-            \end{itemize}
         \end{itemize}
     \end{info}
 

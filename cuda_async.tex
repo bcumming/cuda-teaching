@@ -3,7 +3,7 @@
 %++++++++++++++++++++++++++++++++
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Asynchronouse execution}
+\begin{frame}[fragile]{Asynchronous execution}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     Explain that tasks can be launched asynchronously
 
@@ -16,7 +16,7 @@
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Asynchronouse execution example}
+\begin{frame}[fragile]{Asynchronous execution example}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{columns}[T]
         \begin{column}{0.5\textwidth}
@@ -40,9 +40,9 @@ host_2(...);
         \end{itemize}
         \end{column}
         \begin{column}{0.5\textwidth}
-            \begin{info}{execution}
+            %\begin{info}{execution}
                 \includegraphics[width=\textwidth]{./images/async_null.pdf}
-            \end{info}
+            %\end{info}
         \end{column}
     \end{columns}
 \end{frame}
@@ -52,48 +52,33 @@ host_2(...);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     The CUDA language and runtime libraries provide mechanisms for coordinating asynchronous GPU execution
 
-    \begin{info}{streams}
-        \begin{itemize}
-            \item CUDA streams 
-            \item
-        \end{itemize}
-    \end{info}
-
-    \begin{info}{events}
-        \begin{itemize}
-            \item
-            \item
-        \end{itemize}
-    \end{info}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Streams}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    CUDA allows us to create streams
-
-    All kernels in a stream are serialized
-
-    kernels in different streams can run concurrently
     \begin{itemize}
-        \item if there are resources available
+        \item \emph{CUDA streams} can asynchronously run independent kernels and memory transfers
+        \item \emph{CUDA events} can be used to synchronize streams and query the status of kernels and transfers
     \end{itemize}
 
-    By default, all kernels and memory transfers use the default stream
-    i.e. by default kernels are serialized on the device
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{Streams}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    The \lst{cudaStream_t} type (an integer) is used to specify the stream.
+    CUDA kernel calls and host-device memory transfers can be given to a stream
+    \begin{itemize}
+        \item kernels in different streams can run asynchronously
+        \item kernels in the same stream are executed sequentially
+        \item if no stream is specified, all kernels are launched in the default 0 stream
+    \end{itemize}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Streams}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    A stream is represented using a \lst{cudaStream_t} type
     \begin{itemize}
         \item \lst{cudaStreamCreate(cudaStream_t* s)} creates a new stream, and stores the stream id in \lst{s}.
         \item \lst{cudaStreamDestroy(cudaStream_t s)} frees resources for the stream with id \lst{s}.
         \item To launch a kernel on a stream specify the stream id as a fourth parameter to the launch syntax \\ \lst{<<<grid, block, shared_size, stream>>>}
-        \begin{itemize}
-            \item by default the \emph{NULL stream} is passed
-        \end{itemize}
     \end{itemize}
 
     \begin{code}{basic cuda stream useage}
@@ -108,6 +93,31 @@ cudaStreamDestroy(stream);
         \end{lstlisting}
 \end{code}
 
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Asynchronous device execution example}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{columns}[T]
+        \begin{column}{0.4\textwidth}
+            \begin{codecolumn}{host code}
+                \begin{lstlisting}[style=boxcudatiny]
+kernel_1<<<,,,stream_1>>>();
+kernel_2<<<,,,stream_2>>>();
+kernel_3<<<,,,stream_1>>>();
+                \end{lstlisting}
+            \end{codecolumn}
+            \begin{itemize}
+                \item \lst{kernel_1} and \lst{kernel_2} are serialized in \lst{stream_1}
+                \item \lst{kernel_2} can run asynchronously in \lst{stream_2}
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.6\textwidth}
+            %\begin{info}{execution}
+                \includegraphics[width=\textwidth]{./images/async_two_streams.pdf}
+            %\end{info}
+        \end{column}
+    \end{columns}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

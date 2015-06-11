@@ -5,7 +5,7 @@
 \usepackage{tikz}
 \usepackage{pgfplots}
 \usepackage{pgfplotstable}
-\usetikzlibrary{pgfplots.groupplots,spy}
+\usetikzlibrary{pgfplots.groupplots,spy,patterns}
 \usepackage{listings}
 \usepackage{color}
 \usepackage{tcolorbox}
@@ -27,10 +27,13 @@
 \newcommand{\axpy}{{\ttfamily axpy}\xspace}
 \newcommand{\extra}{{\bfseries extra}:\xspace}
 %\newcommand{\lst}[1]{\colorbox{white!90!blue}{\lstinline!#1!}}
-\newcommand{\lst}[1]{\colorbox{white!10!black}{\lstinline!#1!}}
+\newcommand{\lst}[1]{\colorbox{white!20!black}{\lstinline!#1!}}
 \newcommand{\lstfont}[1]{\color{#1}\scriptsize\ttfamily}
 \newcommand{\lsttinyfont}[1]{\color{#1}\fontsize{7}{7}\ttfamily}
 \newcommand{\lstinlinefont}[1]{\color{#1}\scriptsize\ttfamily}
+
+% set indent to a more reasonable level (so that itemize can be used in columns)
+\setlength{\leftmargini}{10pt}
 
 %\lstset{
 %    language=[ANSI]C++,
@@ -141,7 +144,7 @@
 %\input{cuda_threads.tex}
 %\input{cuda_blocks.tex}
 \input{cuda_local.tex}
-\input{cuda_async.tex}
+%\input{cuda_async.tex}
 %\input{cuda_todo.tex}
 
 \end{document}
