@@ -258,9 +258,9 @@ cudaEventCreate(&start);
 cudaEventCreate(&end);
 cudaStreamCreate(&stream);
 
-cudaEventRecord(start, stream); // put start in stream
+cudaEventRecord(start, stream); // enqueue start in stream
 my_kernel<<<grid_dim, block_dim, 0, stream>>>();
-cudaEventRecord(end, stream);   // put end in stream
+cudaEventRecord(end, stream);   // enqueue end in stream
 cudaEventSynchronize(end);      // wait for end to be reached
 cudaEventElapsedTime(&time_taken, start, end);
 
@@ -277,38 +277,87 @@ cudaStreamDestroy(stream);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \begin{code}{using events to time kernel execution}
+    \begin{code}{copy$\rightarrow$kernel synchronization}
+        \begin{lstlisting}[style=boxcudatiny]
+cudaEvent_t event;
+cudaStream_t kernel_stream, h2d_stream;
+size_t size = 100*sizeof(double);
+double *dptr, *hptr;
+
+// initialize
+cudaEventCreate(&event);
+cudaStreamCreate(&kernel_stream);
+cudaStreamCreate(&h2d_stream);
+cudaMalloc(&dptr, size);
+cudaMallocHost(&hptr, size); // use pinned memory!
+
+cudaMemcpyAsync // start asynchronous copy in h2d_stream
+  (dptr, hptr, size, cudaMemcpyHostToDevice, h2d_stream);
+cudaEventRecord(event, h2d_stream);  // enqueue event in stream
+// make kernel_stream wait for copy to finish
+cudaStreamWaitEvent(kernel_stream, event, 0);
+my_kernel<<<grid_dim, block_dim, 0, kernel_stream>>>();
+
+// free resources for events and streams
+cudaEventDestroy(event);
+cudaStreamDestroy(h2d_stream);
+cudaStreamDestroy(kernel_stream);
+cudaFree(dptr);
+cudaFreeHost(hptr);
+        \end{lstlisting}
+    \end{code}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Exercises}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{enumerate}
+        \item time to visit \lst{util.h} and look at helpers for
+        \begin{itemize}
+            \item asynchronous copy
+            \item pinned allocation
+        \end{itemize}
+        \item walk through event and stream wrapper classes
+        \item walk through the memcopy examples
+        \item use nvprof to look at memcopy 1 \& 2
+    \end{enumerate}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{code}{using events to time kernel execution : \textbf{with helpers}}
         \begin{lstlisting}[style=boxcudatiny]
 CudaEvent start, end;
 CudaStream stream(true);
 
-auto start = stream.add_event();
+auto start = stream.enqueue_event();
 my_kernel<<<grid_dim, block_dim, 0, stream.stream()>>>();
-auto end = stream.add_event();
+auto end = stream.enqueue_event();
 end.wait();
 auto time_taken = end.time_since(start);
 
 std::cout << "kernel took " << 1000*time_taken << " s\n";
         \end{lstlisting}
     \end{code}
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Events : copy-kernel synchronization example}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    code
-\end{frame}
+    \begin{code}{copy$\rightarrow$kernel synchronization : \textbf{with helpers}}
+        \begin{lstlisting}[style=boxcudatiny]
+CudaEvent event;
+CudaStream kernel_stream(true), h2d_stream(true);
+auto size = 100;
+auto dptr = device_malloc<double>(size);
+auto hptr = pinned_malloc<double>(size);
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Exercises}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \begin{itemize}
-        \item time to visit \lst{util.h} and add helpers for asynchronous copy
-        \item just give the event and stream wrappers ``as is''
-        \begin{itemize}
-            \item walk through their use in the memcpy example
-        \end{itemize}
-        \item fire up nvprof
-    \end{itemize}
+copy_to_device_async<double>
+  (hptr, dptr, size, h2d_stream.stream());
+auto event = h2d_stream.enqueue_event();
+kernel_stream.wait_on_event(event);
+my_kernel<<<grid_dim, block_dim, 0, kernel_stream.stream()>>>();
+
+cudaFree(dptr);
+cudaFreeHost(hptr);
+        \end{lstlisting}
+    \end{code}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
