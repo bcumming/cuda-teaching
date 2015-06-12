@@ -3,22 +3,25 @@
 %++++++++++++++++++++++++++++++++
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Concurrency}
+\begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \emph{Concurrency} is the ability to perform multiple CUDA operations simultaneously
-    \begin{itemize}
-        \item CUDA kernels
-        \item copying from host to device
-        \item copying from device to host
-        \item operations on the host CPU
-    \end{itemize}
+    \begin{info}{concurrency}
+        \emph{Concurrency} is the ability to perform multiple CUDA operations simultaneously
+        \begin{itemize}
+            \item CUDA kernels
+            \item copying from host to device
+            \item copying from device to host
+            \item operations on the host CPU
+        \end{itemize}
+    \end{info}
 
-    We can take advantage of concurrency to:
-    \begin{itemize}
-        \item both CPU and GPU can work at the same time
-        \item multiple tasks can be run on GPU simultaneously
-        \item we can overlap communication and computation
-    \end{itemize}
+    \begin{info}{concurrency enables}
+        \begin{itemize}
+            \item both CPU and GPU can work at the same time
+            \item multiple tasks can be run on GPU simultaneously
+            \item we can overlap communication and computation
+        \end{itemize}
+    \end{info}
 
 \end{frame}
 
@@ -53,7 +56,7 @@ host_2(...);
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{CUDA Support for Asynchronous Execution}
+\begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     The CUDA language and runtime libraries provide mechanisms for coordinating asynchronous GPU execution
 
@@ -65,16 +68,21 @@ host_2(...);
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Streams}
+\begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    A CUDA stream is is a sequence of operations that execute in \emph{issue order} on the GPU
-    \begin{itemize}
-        \item CUDA operations are kernels and copies between host and device memory spaces
-    \end{itemize}
+    \begin{info}{streams}
+        A CUDA stream is is a sequence of operations that execute in \emph{issue order} on the GPU
+        \begin{itemize}
+            \item CUDA operations are kernels and copies between host and device memory spaces
+        \end{itemize}
+    \end{info}
 
     \begin{info}{streams and concurrency}
         \begin{itemize}
             \item operations in different streams \emph{may} run concurrently
+            \begin{itemize}
+                \item there have to be sufficient resources on the GPU (registers, shared memory, blocks, etc)
+            \end{itemize}
             \item operations in the same stream \emph{are} executed sequentially
             \item if no stream is specified, all kernels are launched in the default stream
         \end{itemize}
@@ -83,15 +91,17 @@ host_2(...);
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Streams}
+\begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    A stream is represented using a \lst{cudaStream_t} type
-    \begin{itemize}
-        \item \lst{cudaStreamCreate(cudaStream_t* s)} and \lst{cudaStreamDestroy(cudaStream_t s)} can be used to create and free CUDA streams respectively
-        \item To launch a kernel on a stream specify the stream id as a fourth parameter to the launch syntax \\
-            \begin{center} \lst{kernel<<<grid_dim, block_dim, shared_size, stream>>>(...)} \end{center}
-        \item the default CUDA stream is the \lst{NULL} stream, or stream 0 (\lst{cudaStream_t} is an integer)
-    \end{itemize}
+    \begin{info}{managing streams}
+        A stream is represented using a \lst{cudaStream_t} type
+        \begin{itemize}
+            \item \lst{cudaStreamCreate(cudaStream_t* s)} and \lst{cudaStreamDestroy(cudaStream_t s)} can be used to create and free CUDA streams respectively
+            \item To launch a kernel on a stream specify the stream id as a fourth parameter to the launch syntax \\
+                \begin{center} \lst{kernel<<<grid_dim, block_dim, shared_size, stream>>>(...)} \end{center}
+            \item the default CUDA stream is the \lst{NULL} stream, or stream 0 (\lst{cudaStream_t} is an integer)
+        \end{itemize}
+    \end{info}
 
     \begin{code}{basic cuda stream useage}
         \begin{lstlisting}[style=boxcudatiny]
@@ -132,7 +142,7 @@ kernel_3<<<,,,stream_1>>>();
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Asynchronous copy}
+\begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     \begin{info}{asynchronous copy}
@@ -142,74 +152,146 @@ kernel_3<<<,,,stream_1>>>();
             \item returns immediately after initiating copy
             \begin{itemize}
                 \item host can do work while copy is performed
+                \item only if \emph{pinned memory} is used
             \end{itemize}
-            \item only if \emph{pinned memory} is used
-        \end{itemize}
-    \end{info}
-
-    \begin{info}{pinned memory}
-        \centering \lst{cudaMallocHost(**ptr, size);}
-        \begin{itemize}
-            \item allocates $size$ bytes of pinned host memory
+            \item copies in the same direction (i.e. H2D or D2H) are serialized
+            \begin{itemize}
+                \item copies in opposite directions are concurrent if in different streams
+            \end{itemize}
         \end{itemize}
     \end{info}
 
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Asynchronous copy example: streaming}
+\begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    Streaming workloads have computations that can be performed independently, e.g. our \axpy example:
-    \begin{itemize}
-        \item data in host memory has to be copied to the device, and the result copied back after the kernel is computed.
-        \item we can overlap the copies with the kernel calls by breaking the data into chunks.
-    \end{itemize}
+    \begin{info}{what is pinned memory?}
+        Pinned memory (or page-locked) memory will not be paged out to disk when memory runs low
+        \begin{itemize}
+            \item the GPU can safely remotely read/write the memory directly without host involvement
+            \item only use for transfers, because you run out of memory
+        \end{itemize}
+    \end{info}
+
+    \begin{info}{managing pinned memory}
+        \centering \lst{cudaMallocHost(**ptr, size);} and \lst{cudaFreeHost(*ptr);}
+        \begin{itemize}
+            \item allocate and free pinned memory (\lst{size} is in bytes).
+        \end{itemize}
+    \end{info}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{info}{Asynchronous copy example: streaming workloads}
+        Computations that can be performed independently, e.g. our \axpy example:
+        \begin{itemize}
+            \item data in host memory has to be copied to the device, and the result copied back after the kernel is computed.
+            \item we can overlap the copies with the kernel calls by breaking the data into chunks.
+        \end{itemize}
+    \end{info}
     \includegraphics[width=\textwidth]{./images/overlap.pdf}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Events}
+\begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    To implement the streaming workload we have to coordinate operations on the GPU
-    \begin{itemize}
-        \item e.g. wait for chunk to finish copying H2D before launching kernel.
-    \end{itemize}
-
-    CUDA provides events for this purpose
-    \begin{itemize}
-        \item synchronize tasks in different streams:
+    \begin{info}{CUDA events}
+        To implement the streaming workload we have to coordinate operations on the GPU.
+        CUDA events can be used for this purpose.
         \begin{itemize}
-            \item don't start kernel in kernel stream until data copy stream has finished.
-            \item wait until required data has finished copy from host before launching kernel
+            \item synchronize tasks in different streams, e.g.:
+            \begin{itemize}
+                \item don't start kernel in kernel stream until data copy stream has finished.
+                \item wait until required data has finished copy from host before launching kernel
+            \end{itemize}
+            \item query status of concurrent tasks
+            \begin{itemize}
+                \item has kernel finished/started yet?
+                \item how long did a kernel take to compute?
+            \end{itemize}
         \end{itemize}
-        \item allow us to query status of concurrent tasks
-        \begin{itemize}
-            \item has kernel finished/started yet?
-            \item how long did a kernel take to compute?
-        \end{itemize}
-    \end{itemize}
+    \end{info}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Events}
+\begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    How to create and event
-
-    How to destroy an event
-
-    How to insert an event into a stream
-
-    How to make a stream wait on an event
+    \begin{info}{managing events}
+        \lst{cudaEventCreate(cudaEvent_t*);} and \lst{cudaEventDestroy(cudaEvent_t);}
+            \begin{itemize}
+                \item create and free \lst{cudaEvent_t}
+            \end{itemize}
+        \lst{cudaEventRecord(cudaEvent_t, cudaStream_t_);}
+            \begin{itemize}
+                \item enqueue an event in a stream
+            \end{itemize}
+        \lst{cudaEventSynchronize(cudaEvent_t);}
+            \begin{itemize}
+                \item make host execution wait for event to occur.
+            \end{itemize}
+        \lst{cudaEventQuery(cudaEvent_t)}
+            \begin{itemize}
+                \item test if the work before an event in a queue has been completed
+            \end{itemize}
+        \lst{cudaEventElapsedTime(float*, cudaEvent_t, cudaEvent_t);}
+            \begin{itemize}
+                \item get time between two events
+            \end{itemize}
+    \end{info}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Events : timing example}
+\begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    timing kernel execution on GPU requires events
+    \begin{code}{using events to time kernel execution}
+        \begin{lstlisting}[style=boxcudatiny]
+cudaEvent_t start, end;
+cudaStream_t stream;
+float time_taken;
 
-    code
+// initialize the events and streams
+cudaEventCreate(&start);
+cudaEventCreate(&end);
+cudaStreamCreate(&stream);
+
+cudaEventRecord(start, stream); // put start in stream
+my_kernel<<<grid_dim, block_dim, 0, stream>>>();
+cudaEventRecord(end, stream);   // put end in stream
+cudaEventSynchronize(end);      // wait for end to be reached
+cudaEventElapsedTime(&time_taken, start, end);
+
+std::cout << "kernel took " << 1000*time_taken << " s\n";
+
+// free resources for events and streams
+cudaEventDestroy(start);
+cudaEventDestroy(end);
+cudaStreamDestroy(stream);
+        \end{lstlisting}
+    \end{code}
 \end{frame}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{code}{using events to time kernel execution}
+        \begin{lstlisting}[style=boxcudatiny]
+CudaEvent start, end;
+CudaStream stream(true);
+
+auto start = stream.add_event();
+my_kernel<<<grid_dim, block_dim, 0, stream.stream()>>>();
+auto end = stream.add_event();
+end.wait();
+auto time_taken = end.time_since(start);
+
+std::cout << "kernel took " << 1000*time_taken << " s\n";
+        \end{lstlisting}
+    \end{code}
+\end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{Events : copy-kernel synchronization example}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
