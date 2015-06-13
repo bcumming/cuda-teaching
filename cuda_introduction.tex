@@ -2,52 +2,77 @@
 \cscschapter{Introduction}
 
 %%%%
-\begin{frame}[fragile]{Introduction to CUDA}
+\begin{frame}[fragile]{}
     \begin{info}{The plan}
         \begin{itemize}
-            \item learn about the GPU programming model
-            \item implement CUDA kernels for simple linear algebra
-            \item learn how to orchestrate asynchronous computaion and communication on GPU
-            \item a 2D stencil application
+            \item learn about the GPU memory model
+            \item implement parallel CUDA kernels for simple linear algebra
+            \item learn how to scale our parallel kernels to utilize all resources on the GPU
+            \item understand which types of workloads can best take advantage of GPU resources
+            \item learn about thread cooperation and synchronization in CUDA
+            \item learn about concurrent task-based parallelism with CUDA
         \end{itemize}
     \end{info}
 
-    \begin{info}{Prerequisites}
+\end{frame}
+
+\begin{frame}[fragile]{}
+    \begin{info}{Prerequisites for the course}
         \begin{itemize}
+            \item no GPU or graphics experience required
             \item I assume C++ knowledge
             \begin{itemize}
                 \item I will be using C++11 (the bits that make C++ easier!)
-                \item Fortran users consider working with a C++ user
+                \item Fortran users are encouraged to work with a C++ user for the practical exercises
             \end{itemize}
-            \item No GPU or graphics experience required
+            \item the generic GPU programming concepts in the CUDA part will be useful for people interested in OpenACC
         \end{itemize}
     \end{info}
 
 \end{frame}
 
 %%%%
-\begin{frame}[fragile]{What is CUDA?}
-    \begin{info}{A superset of C++}
+\begin{frame}[fragile]{}
+    \begin{info}{CUDA language is a superset of C++}
         \begin{itemize}
             \item write CPU code using C++ (C++11 since CUDA 6.5)
             \item write kernels to run on GPU using new keywords
-            \item provides special syntax for launching kernels on GPU
+            \item use special syntax for launching kernels on GPU
         \end{itemize}
     \end{info}
 
-    \begin{info}{GPU specific}
+    \begin{info}{CUDA is GPU-specific}
         \begin{itemize}
-            \item the CUDA extensions define the \emph{programming model}
-            \item PRO : programming model is well suited to GPU
-            \item CON : GPU-specific
+            \item the CUDA language extensions define the \emph{programming model}
+            \item features map directly to hardware (e.g. shared memory, thread blocks)
         \end{itemize}
     \end{info}
 
-    \begin{info}{Extras}
+    \begin{info}{CUDA toolkit is more than just a language}
         \begin{itemize}
-            \item provides library/API
+            \item runtime library for managing GPU resources
             \item tools for profiling and debugging
         \end{itemize}
     \end{info}
 \end{frame}
 
+
+\begin{frame}[fragile]{}
+    \begin{info}{What about the GPU in my laptop/desktop/cluster?}
+        \begin{itemize}
+            \item the GPUs in Piz Daint are NVIDIA Tesla K20X devices
+            \item Tesla devices are high-end products with features required for high-performance computing
+            \begin{itemize}
+                \item higher double precision performance
+                \item large DRAM
+                \item ECC memory
+            \end{itemize}
+            \item the K20X Tesla cards use the Kepler architecture
+            \begin{itemize}
+                \item some features are not supported by older cards
+            \end{itemize}
+            \item I focus on features of the K20X devices for this course
+        \end{itemize}
+    \end{info}
+
+\end{frame}

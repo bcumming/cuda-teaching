@@ -1,49 +1,56 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\cscschapter{Working with host and device memory}
+\cscschapter{Working with GPU memory}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 %%%%
-\begin{frame}[fragile]{Device and Host Memory}
+\begin{frame}[fragile]{}
     \begin{center}
         \includegraphics[width=0.9\textwidth]{./images/node.pdf}
     \end{center}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Device and Host Memory}
+\begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \begin{info}{host and device have separate memory spaces}
+    \begin{info}{Host and device have separate memory spaces}
         \begin{itemize}
             \item data must be copied between host and device memory via PCI
             \item data must be in device memory for kernels to access
-            \item ensure data is in the right memory space \emph{before} computation starts
                 \begin{itemize}
-                    \item PCIe2 = 6-12 GB/s
-                    \item CPU socket = 35-50 GB/s
-                    \item K20X  = 180 GB/s
+                    \item not strictly true\ldots
+                    \item but a strict requirement for high performance
                 \end{itemize}
+            \item ensure data is in the right memory space \emph{before} computation starts
+            \begin{itemize}
+                \item PCIe2 = 6-12 GB/s
+                \item CPU socket = 35-50 GB/s
+                \item K20X  = 180 GB/s
+            \end{itemize}
         \end{itemize}
     \end{info}
 
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Refering to host and device memory}
+\begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{info}{CUDA uses C pointers to reference GPU memory}
+        \centering \lst{double *data = // pass an address to either host or device memory}
         \begin{itemize}
-            \item it isn't possible to tell whether a pointer points to device or host
-            \item accessing a device pointer in host code is \emph{undefined behaviour}
+            \item a pointer can hold an address in \emph{either} device or host memory
+            \item accessing a device pointer in host code, or vice versa, is \emph{undefined behaviour}
+            \item we have to take care that we know which memory space a pointer is addressing
         \end{itemize}
+        The CUDA runtime library provides functions that can be used to allocate, free and copy device memory
     \end{info}
 
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Allocating Memory}
+\begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \begin{info}{allocating memory on device}
+    \begin{info}{Allocating device memory}
         \centering \lst{cudaMalloc(void **ptr, size_t size)}
     \begin{itemize}
         \item \lst{size} number of bytes to allocate
@@ -51,15 +58,15 @@
     \end{itemize}
     \end{info}
 
-    \begin{info}{freeing memory on device}
+    \begin{info}{Freeing device memory}
         \centering \lst{cudaFree(void *ptr)}
     \end{info}
 
-    \begin{code}{allocate 100 doubles on device}
+    \begin{code}{Allocate memory for 100 doubles on device}
 %..................................
         \begin{lstlisting}[style=boxcuda]
-double *v;
-int size_in_bytes = 100*sizeof(double);
+double *v; // C pointer that will point to device memory
+auto size_in_bytes = 100*sizeof(double);
 cudaMalloc(&v, size_in_bytes); // allocate memory
 cudaFree(v);                   // free memory
 \end{lstlisting}
@@ -67,10 +74,10 @@ cudaFree(v);                   // free memory
     \end{code}
 \end{frame}
 
-%%%%
-\begin{frame}[fragile]{Copying data}
-
-    \begin{info}{perform blocking copy (host waits for copy to finish)}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{info}{Perform blocking copy (host waits for copy to finish)}
         \centering \lst{cudaMemcpy(void *dst, void *src, size_t size, cudaMemcpyKind kind)}
     \begin{itemize}
         \item \lst{dst} destination pointer
@@ -81,13 +88,13 @@ cudaFree(v);                   // free memory
     \end{itemize}
     \end{info}
 
-    \begin{code}{copy 100 doubles to device, then back to host}
+    \begin{code}{Copy 100 doubles to device, then back to host}
 %..................................
         \begin{lstlisting}[style=boxcuda]
 int size = 100*sizeof(double); // size in bytes
 double *v_d;
-cudaMalloc(&v_d, size);
-double *v_h = (double*)malloc(size);
+cudaMalloc(&v_d, size);              // allocate on device
+double *v_h = (double*)malloc(size); // allocate on host
 cudaMemcpy(v_d, v_h, size, cudaMemcpyHostToDevice);
 cudaMemcpy(v_h, v_d, size, cudaMemcpyDeviceToHost);
 \end{lstlisting}
@@ -96,15 +103,16 @@ cudaMemcpy(v_h, v_d, size, cudaMemcpyDeviceToHost);
 \end{frame}
 
 %%%%
-\begin{frame}[fragile]{Error handling}
+\begin{frame}[fragile]{}
 
-    \begin{info}{}
-        All API functions return error codes that indicate either:
+    \begin{info}{Errors happen\ldots}
+        all API functions return error codes that indicate either:
         \begin{itemize}
+            \item success
             \item an error in the API call
             \item an error in an earlier asynchronous call
         \end{itemize}
-        The return value is the enum type \lst{cudaError_t}
+        the return value is the enum type \lst{cudaError_t}
         \begin{itemize}
             \item e.g. \lst{cudaError_t status = cudaMalloc(&v, 100);}
             \begin{itemize}
@@ -128,9 +136,9 @@ cudaMemcpy(v_h, v_d, size, cudaMemcpyDeviceToHost);
 \end{frame}
 
 %%%%
-\begin{frame}[fragile]{Error handling}
+\begin{frame}[fragile]{}
 
-    \begin{code}{copy 100 doubles to device, with error checking}
+    \begin{code}{Copy 100 doubles to device \emph{with error checking}}
 %..................................
         \begin{lstlisting}[style=boxcuda]
 double *v_d;
@@ -145,17 +153,15 @@ status =
   cudaMemcpy(v_d, v_h, size, cudaMemcpyHostToDevice);
 if(status != cudaSuccess) {
   printf("cuda error : %s\n", cudaGetErrorString(status));
-  printf("cuda error : %s\n", cudaGetErrorString(status));
   exit(1);
 }
         \end{lstlisting}
 %..................................
     \end{code}
 
-    It is essential to test for errors
-    \begin{itemize}
-        \item but it gets tedious...
-    \end{itemize}
+    \begin{info}{It is essential to test for errors}
+        But it is tedious and obfuscates our source code
+    \end{info}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -163,25 +169,32 @@ if(status != cudaSuccess) {
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     Open \lst{cuda/exercises/util.h}
     \begin{enumerate}
-        \item what does \lst{cude_check_error()} do?
+        \item what does \lst{cuda_check_error()} do?
 
-        \item Write a template wrapper around cudaMalloc to simplify allocating memory
+        \item look at the template wrappers \lst{malloc_host} and \lst{malloc_device}
         \begin{itemize}
-            \item use the example for \lst{malloc_host} that is already implemented
-            \item remember to check for errors API errors.
-            \item what are the benefits over using \lst{cudaMalloc} directly?
-            \item do we need to write a similar function for \lst{cudaFree}?
+            \item what do they do?
+            \item what are the benefits over using \lst{cudaMalloc} and \lst{free} directly?
+            \item do we need corresponding functions for \lst{cudaFree} and \lst{free}?
         \end{itemize}
 
-        \item Write a wrapper around \lst{cudaMemcpy} for copying data from host to device
+        \item write a wrapper around \lst{cudaMemcpy} for copying data from host to device
         \begin{itemize}
             \item use the example for the reverse operation \lst{copy_device_to_host_sync}
+            \item remember to check for errors!
         \end{itemize}
 
-        \item Compile the test and run
+        \item compile the test and run
         \begin{itemize}
+            %\item \lst{make axpy_cublas}
             \item it will pass with no errors on success
         \end{itemize}
+
+    \vspace{-5pt}
+\begin{lstlisting}[style=terminal]
+make axpy_cublas
+aprun ./axpy_cublas 8
+\end{lstlisting}
     \end{enumerate}
 
 \end{frame}

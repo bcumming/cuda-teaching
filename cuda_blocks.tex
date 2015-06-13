@@ -2,7 +2,7 @@
 \cscschapter{Scaling Up : Thread Blocks}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Thread Blocks}
+\begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{info}{}
         In the \axpy exercises we were limitted to 1024 threads for a kernel launch
@@ -11,10 +11,10 @@
         \end{itemize}
     \end{info}
 
-    \begin{info}{thread blocks and grids}
+    \begin{info}{Thread blocks and grids}
         \begin{itemize}
             \item Kernels are executed in groups of threads called \emph{thread blocks}
-            \item the launch configuration \lst{axpy<<<grid_dim, block_dim>>>(...)}
+            \item the launch configuration \lst{axpy@<<<@grid_dim, block_dim@>>>@(...)}
             \begin{itemize}
                 \item launch a \emph{grid} of \lst{grid_dim} \emph{blocks}
                 \item each \emph{block} has \lst{block_dim} \emph{threads}
@@ -27,23 +27,22 @@
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Thread Blocks : motivation behind blocks and grids}
+\begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    this might be split into 3-4 slides, each slide with a picture and 1-2 points per slide
-    \begin{info}{why the additional complexity of grids+blocks+threads?}
+    \begin{info}{Why the additional complexity of grids+blocks+threads?}
+        Because coordination and sharing between threads doesn't scale:
         \begin{itemize}
             \item threads in a block can synchronize and share resources
-            \item this does not scale past a certain point
-            \item GPU has 14 streaming multiprocessors (SMXs)
-            \item each SMX has 192 CUDA cores, and can run 2028 threads sumultaneously
-            \item threads in a block all run on the same SMX (share resources like shared memory)
-            \item break the work into blocks, which are distributed over the different SMXs
+            \item this does not scale past a certain number of cores/threads
+            \item on the K20X GPU streaming multiprocessor (SMX) has 192 CUDA cores, and can run 2028 threads
+            \item threads in a block run on the same SMX, with shared resources and thread cooperation
+            \item work is broken into blocks, which are distributed over the 14 SMXs in the K20X GPU
         \end{itemize}
     \end{info}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Mapping Kernels to Hardware}
+\begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{center}
 \vspace{-0.75cm}
@@ -89,50 +88,53 @@
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Calculating thread indexes}
+\begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    All kernels first calculate the index or position 
-    \begin{itemize}
-        \item In \lst{axpy} we used \lst{threadIdx.x} for the index
-        \item When using multiple blocks, we need more information, which is available in the following \emph{magic variables}:
+    \begin{info}{Calculating thread indexes}
+        A kernel has to calculate the index of its work item
+        \begin{itemize}
+            \item In \lst{axpy} we used \lst{threadIdx.x} for the index
+            \item When using multiple blocks, we need more information, which is available in the following \emph{magic variables}:
+        \end{itemize}
 
-    \end{itemize}
+        \begin{center}
+            \begin{tabular}{ll}
+            \lst{gridDim}   &: total number of blocks in the grid \\
+            \lst{blockDim}  &: number of threads in a thread block \\
+            \lst{blockIdx}  &: index of block \lst{[0, gridDim-1]} \\
+            \lst{threadIdx} &: index of thread in thread block \lst{[0, blockDim-1]} \\
+            \end{tabular}
+        \end{center}
 
-    \begin{center}
-        \begin{tabular}{|l|l|}
-            \hline
-        \lst{gridDim}   & total number of blocks in the grid \\
-        \lst{blockDim}  & number of threads in a thread block \\
-        \lst{blockIdx}  & index of block \lst{[0, gridDim-1]} \\
-        \lst{threadIdx} & index of thread in thread block \lst{[0, blockDim-1]} \\
-            \hline
-        \end{tabular}
-    \end{center}
+    \end{info}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Using Thread Blocks}
+\begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    Consider accessing an array of length 24 with 8 threads per block. The \emph{dimensions} of the kernel launch are:
-    \begin{itemize}
-        \item \lst{gridDim.x == 3} (3 blocks)
-        \item \lst{blockDim.x == 8} (8 threads/block)
-    \end{itemize}
-    We calculate the index for our thread using the formula
-    \begin{center}
-        \lst{auto index = threadIdx.x + blockIdx.x*blockDim.x}
-        \\ \vspace{10pt}
-        \includegraphics[width=\textwidth]{./images/blocks.pdf}
-    \end{center}
+    \begin{info}{Calculating thread indexes}
+        Consider accessing an array of length 24 with 8 threads per block. The \emph{dimensions} of the kernel launch are:
+        \begin{itemize}
+            \item \lst{blockDim.x == 8} (8 threads/block)
+            \item \lst{gridDim.x == 3} (3 blocks)
+        \end{itemize}
+        We calculate the index for our thread using the formula
+        \begin{center}
+            \lst{auto index = threadIdx.x + blockIdx.x*blockDim.x}\\
+            \vspace{0.5cm}
+            \centering \includegraphics[width=\textwidth]{./images/blocks.pdf}
+        \end{center}
+    \end{info}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Using Thread Blocks}
+\begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{info}{Computing block dimensions}
         \begin{enumerate}
-            \item The number of thread blocks is calculated at the call site
-            \item Test in the kernel to guard against overflow when the number of work items is not divisible by the thread block size
+            \item the number of thread blocks and the number of threads per block are parameters for the kernel launch
+                \\ \centering \lst{kernel@<<<@blocks, threads_per_block@>>>@(...)}
+            \item test in the kernel to guard against overflow when the number of work items is not divisible by the thread block size
         \end{enumerate}
     \end{info}
 
@@ -150,23 +152,22 @@ void add_gpu(int *a, int *b, int n){
 // in main()
 auto block_size = 512;
 auto num_blocks = (n + (block_size-1)) / block_size;
-add_gpu<<<num_blocks, block_size>>(a, b, n);
+add_gpu@<<<@num_blocks, block_size@>>>@(a, b, n);
         \end{lstlisting}
 %..................................
     \end{code}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Choosing Block Sizes}
+\begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{info}{The number of threads per block impacts performance}
     \begin{itemize}
-        \item depends on the resources (registers, shared memory, etc) that a kernel requires
-        \item can be determined using trial and error
+        \item the optimal number depends on the resources (registers, shared memory, etc) that a kernel requires
     \end{itemize}
     \end{info}
 
-    \begin{code}{choosing block size automatically (CUDA 6.5 and later)}
+    \begin{code}{Choosing block size automatically (CUDA 6.5 and later)}
 %..................................
         \begin{lstlisting}[style=boxcudatiny]
 int block_size, min_grid_dim;
@@ -175,12 +176,12 @@ cudaOccupancyMaxPotentialBlockSize
   (&min_grid_size, &block_size, add_gpu, 0, n);
 auto num_blocks = (n + (block_size-1)) / block_size;
 
-add_gpu<<<num_blocks, block_size>>(a, b, n);
+add_gpu@<<<@num_blocks, block_size@>>>@(a, b, n);
         \end{lstlisting}
 %..................................
     \end{code}
 
-    \begin{info}{Occupancy}
+    \begin{info}{}
     The variable \lst{min_grid_size} is set to the minimum number of blocks required to \emph{saturate} the GPU, i.e. provide the GPU with enough work to utilize all of the SMXs.
     \end{info}
 \end{frame}

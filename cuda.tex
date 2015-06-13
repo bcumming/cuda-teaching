@@ -40,6 +40,22 @@
 %    basicstyle=\lstinlinefont{blue!30!black},
 %    breaklines=true
 %}
+\lstdefinestyle{terminal}{
+    showstringspaces=false,
+    backgroundcolor=\color{white},
+    basicstyle=\lstfont{black},
+    identifierstyle=\lstfont{black},
+    keywordstyle=\lstfont{black},
+    numberstyle=\lstfont{black},
+    stringstyle=\lstfont{black},
+    commentstyle=\lstfont{black},
+    emph={
+        aprun, make
+    },
+    emphstyle={\lstfont{black}},
+    breaklines=true
+}
+
 \lstset{
     language=[ANSI]C++,
     showstringspaces=false,
@@ -50,6 +66,7 @@
     numberstyle=\lstfont{white},
     stringstyle=\lstfont{cyan},
     commentstyle=\lstfont{yellow!30!white},
+    moredelim=[is][\lstfont{green!60!white}]{@}{@},
     emph={
         cudaMalloc, cudaFree,
         cudaMallocHost, cudaFreeHost,
@@ -65,6 +82,7 @@
         cudaStreamWaitEvent,
         threadIdx, blockIdx, blockDim, gridDim,
         cudaStream_t, cudaStreamCreate, cudaStreamDestroy,
+        \<\<\<,
     },
     emphstyle={\lstfont{green!60!white}},
     breaklines=true
@@ -84,6 +102,7 @@
     numberstyle=\lstfont{white},
     stringstyle=\lstfont{cyan},
     commentstyle=\lstfont{yellow!30!white},
+    moredelim=[is][\lstfont{green!60!white}]{@}{@},
     emph={
         cudaMalloc, cudaFree,
         cudaMallocHost, cudaFreeHost,
@@ -99,6 +118,7 @@
         cudaStreamWaitEvent,
         threadIdx, blockIdx, blockDim, gridDim,
         cudaStream_t, cudaStreamCreate, cudaStreamDestroy,
+        \<\<\<,
     },
     emphstyle={\lstfont{green!60!white}},
     breaklines=true
@@ -114,6 +134,7 @@
     numberstyle=\lsttinyfont{white},
     stringstyle=\lsttinyfont{cyan},
     commentstyle=\lsttinyfont{yellow!30!white},
+    moredelim=[is][\lsttinyfont{green!60!white}]{@}{@},
     emph={
         cudaMalloc, cudaFree,
         cudaMallocHost, cudaFreeHost,
@@ -154,11 +175,11 @@
 % currentsection, currentsubsection, firstsection=xx, hideallsubsections, hideothersubsections, part=xx, pausesections, pausesubsections, sections=xx, sections={xx-yy}, sections={xx,yy}
 %\cscstableofcontents[hideallsubsections]{Title}
 
-%\input{cuda_introduction.tex}
-%\input{cuda_api.tex}
-%\input{cuda_threads.tex}
-%\input{cuda_blocks.tex}
-%\input{cuda_local.tex}
+\input{cuda_introduction.tex}
+\input{cuda_api.tex}
+\input{cuda_threads.tex}
+\input{cuda_blocks.tex}
+\input{cuda_local.tex}
 \input{cuda_async.tex}
 %\input{cuda_todo.tex}
 

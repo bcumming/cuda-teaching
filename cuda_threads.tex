@@ -2,44 +2,44 @@
 \cscschapter{Going Parallel : Kernels and Threads}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{The CUDA Programming Model}
+\begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \begin{info}{threads and kernels}
+    \begin{info}{Threads and kernels}
         \begin{itemize}
-            \item \textbf{thread} are run simultaneously on GPU (1000s)
-            \item \textbf{kernel} is the task run by each thread
-            \item CUDA provides the means for
+            \item \emph{threads} are run simultaneously on GPU (1000s)
+            \item \emph{kernel} is the task run by each thread
+            \item CUDA provides language support for
             \begin{itemize}
                 \item writing kernels
                 \item launching many threads to execute parallel kernel
             \end{itemize}
-            \begin{itemize}
-                \item it hides the low-level scheduling
-            \end{itemize}
+            \item CUDA hides the low-level details of launching threads
         \end{itemize}
     \end{info}
-    \begin{info}{Porting to CUDA}
+    \begin{info}{The process for porting to CUDA}
         \begin{enumerate}
             \item formulate algorithm in terms of parallel work items
-            \item write a cuda kernel which implements a work item
-            \item launch the kernel on as many threads as required
+            \item write a kernel implementing a work item on one thread
+            \item launch the kernel with the required number of threads
         \end{enumerate}
     \end{info}
 
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Scaled Vector Addition (\axpy)}
+\begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \begin{info}{}
+    \begin{info}{Scaled Vector Addition (\axpy)}
         The exercises use CUBLAS to perform scaled vector addition
-            \vspace{-10pt}
             $$y = y + \alpha x$$
-            \vspace{-25pt}
+            \vspace{-15pt}
         \begin{itemize}
             \item $x$ and $y$ are vectors of length $n$
             \item $\alpha$ is scalar
         \end{itemize}
+        \axpy can be expressed into $n$ independent operations
+        $$y_i \leftarrow y_i + a*x_i,\quad i = {0, 1, \dots, n-1}$$
+        which can be performed independently and in any order
     \end{info}
 
     \begin{code}{\axpy implemented with for loop}
@@ -53,16 +53,10 @@ void axpy(double *y, double *x, double a, int n) {
 %..................................
     \end{code}
 
-    \begin{info}{}
-        \axpy can be expressed into $n$ independent operations
-        $$y_i \leftarrow y_i + a*x_i,\quad i = {0, 1, \dots, n-1}$$
-        which can be performed independently and in any order
-    \end{info}
-
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Writing A Kernel}
+\begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{info}{What is a kernel?}
     \begin{itemize}
@@ -112,14 +106,14 @@ void add_gpu(int *a, int *b, int n){
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Launching a Kernel}
+\begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{info}{launching a kernel}
     \begin{itemize}
         \item host code launches a kernel on the GPU \emph{asyncronously}
-        \item CUDA provides special \lst{<<<_,_>>>} syntax for launching a kernel
+        \item CUDA provides special \lst{<<<_,_@>>>@} syntax for launching a kernel
         \begin{itemize}
-            \item \lst{foo<<<1, num_threads>>>(args... )} will launch the kernel \lst{foo} with \lst{num_threads} parallel threads.
+            \item \lst{foo@<<<@1, num_threads@>>>@(args... )} will launch the kernel \lst{foo} with \lst{num_threads} parallel threads.
         \end{itemize}
     \end{itemize}
     \end{info}
@@ -143,7 +137,7 @@ add_cpu(a, b, n);
 auto n = 1024;
 auto a = device_malloc<int>(n);
 auto b = device_malloc<int>(n);
-add_gpu<<<1,n>>>(a, b, n);
+add_gpu@<<<@1,n@>>>@(a, b, n);
         \end{lstlisting}
 %..................................
             \end{codecolumn}
@@ -155,7 +149,7 @@ add_gpu<<<1,n>>>(a, b, n);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{Exercise: My First Kernel}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    Open \lst{cuda/exercises/axpy_kernel.h}
+    Open \lst{cuda/exercises/axpy_kernel.cu}
 
     \begin{enumerate}
         \item Write a kernel that implements \axpy for \lst{double}
