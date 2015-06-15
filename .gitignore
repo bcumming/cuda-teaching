@@ -15,4 +15,5 @@
 *.swn
 
 cuda.pdf
+gpu_introduction.pdf
 images/*.pdf

@@ -14,7 +14,7 @@
 \usepackage{graphicx}
 
 % define footer text
-\newcommand{\footlinetext}{CUDA Introduction}
+\newcommand{\footlinetext}{Introduction to GPUs in HPC}
 
 % Select the image for the title page
 \newcommand{\picturetitle}{cscs_images/image5.pdf}
@@ -170,18 +170,84 @@
 % TITLE SLIDE
 \cscstitle
 
-% TABLE OF CONTENT SLIDE
-% All options for table of contents:
-% currentsection, currentsubsection, firstsection=xx, hideallsubsections, hideothersubsections, part=xx, pausesections, pausesubsections, sections=xx, sections={xx-yy}, sections={xx,yy}
-%\cscstableofcontents[hideallsubsections]{Title}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{center}
+        \includegraphics[width=0.9\textwidth]{./images/node.pdf}
+    \end{center}
+\end{frame}
 
-\input{cuda_introduction.tex}
-\input{cuda_api.tex}
-\input{cuda_threads.tex}
-\input{cuda_blocks.tex}
-\input{cuda_local.tex}
-\input{cuda_async.tex}
-%\input{cuda_todo.tex}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{info}{There is a trend towards more parallelism ``on node''}
+        \emph{Multi-core CPUs} get more cores and wider vector lanes
+        \begin{itemize}
+            \item 16-core$\times$2 thread Haswell processors from Intel
+            \item 12-core$\times$8 thread Power8 processors from IBM
+        \end{itemize}
+        \emph{Many-core Accelerators} with many highly-specialized cores and high-bandwidth memory
+        \begin{itemize}
+            \item NVIDIA K20X GPUs with 2688 cores
+            \item Intel KNL with 72 cores $\times$ 4 threads
+        \end{itemize}
+    \end{info}
 
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{info}{Current applications are not designed for many core}
+        \begin{itemize}
+            \item exposing sufficient fine-grained parallelism for multi and many core processors is hard
+            \item new programming models are required
+            \item new algorithms are required
+            \item existing code has to be rewritten or refactored
+        \end{itemize}
+    \end{info}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{info}{MPI and the free lunch}
+        %In 2005 Herb Sutter wrote an article called ``The Free Lunch is Over''
+        HPC applications were ported to use the message passing library MPI in the late 90s and early 200s at great cost and effort
+        \begin{itemize}
+            \item individual nodes with one or two CPUs
+            \item break problem into chunks/sub-domains
+            \item explicit message passing between sub-domains
+        \end{itemize}
+        The ``free lunch'' was the regular speedup in codes as CPU clock frequencies increased and as the number of nodes in systems increased
+        \begin{itemize}
+            \item with little/no effort, each new generation of processor bought significant speedups
+        \end{itemize}
+    \end{info}
+
+    \centering ...  but there is no such thing as a free lunch
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{info}{How to speed up an application}
+        There are 3 ways to increase performance
+        \begin{enumerate}
+            \item increase clock speed
+            \item increase the number of operations per clock cycle
+            \begin{itemize}
+                \item e.g. vectorization
+                \item e.g. multi-core
+            \end{itemize}
+            \item don't stall
+            \begin{itemize}
+                \item e.g. cache to avoid waiting on memory requests
+                \item e.g. branch prediction to avoid pipeline stalls
+            \end{itemize}
+        \end{enumerate}
+    \end{info}
+\end{frame}
 \end{document}
 
