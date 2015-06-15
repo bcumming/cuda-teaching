@@ -7,20 +7,21 @@
     \begin{info}{}
         In the \axpy exercises we were limitted to 1024 threads for a kernel launch
         \begin{itemize}
-            \item But GPUs are about \emph{massive parallelism}
+            \item but we need to scale beyond 1024 threads for the \emph{massive parallelism} we were promised!
         \end{itemize}
     \end{info}
 
     \begin{info}{Thread blocks and grids}
+        kernels are executed in groups of threads called \emph{thread blocks}
+        \vspace{-12pt}
         \begin{itemize}
-            \item Kernels are executed in groups of threads called \emph{thread blocks}
             \item the launch configuration \lst{axpy@<<<@grid_dim, block_dim@>>>@(...)}
             \begin{itemize}
                 \item launch a \emph{grid} of \lst{grid_dim} \emph{blocks}
                 \item each \emph{block} has \lst{block_dim} \emph{threads}
                 \item for a total of \lst{grid_dim}$\times$\lst{block_dim} threads
             \end{itemize}
-            \item so far we have been launching one thread block \lst{axpy<<1, n>>(...)}
+            \item previously we launched just one thread block \lst{axpy<<1, n>>(...)}
         \end{itemize}
     \end{info}
 
@@ -93,8 +94,8 @@
     \begin{info}{Calculating thread indexes}
         A kernel has to calculate the index of its work item
         \begin{itemize}
-            \item In \lst{axpy} we used \lst{threadIdx.x} for the index
-            \item When using multiple blocks, we need more information, which is available in the following \emph{magic variables}:
+            \item in \lst{axpy} we used \lst{threadIdx.x} for the index
+            \item when using multiple blocks, we need more information, which is available in the following \emph{magic variables}:
         \end{itemize}
 
         \begin{center}
@@ -130,12 +131,12 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \begin{info}{Computing block dimensions}
-        \begin{enumerate}
-            \item the number of thread blocks and the number of threads per block are parameters for the kernel launch
-                \\ \centering \lst{kernel@<<<@blocks, threads_per_block@>>>@(...)}
-            \item test in the kernel to guard against overflow when the number of work items is not divisible by the thread block size
-        \end{enumerate}
+    \begin{info}{Calculating grid dimensions}
+            The number of thread blocks and the number of threads per block are parameters for the kernel launch:
+            \begin{center}
+                \lst{kernel@<<<@blocks, threads_per_block@>>>@(...)}
+            \end{center}
+            Remember to guard against overflow when the number of work items is not divisible by the thread block size
     \end{info}
 
     \begin{code}{vector addition with multiple blocks}
@@ -150,6 +151,31 @@ void add_gpu(int *a, int *b, int n){
 }
 
 // in main()
+auto block_size = 512;
+auto num_blocks = (n + (block_size-1)) / block_size;
+add_gpu@<<<@num_blocks, block_size@>>>@(a, b, n);
+        \end{lstlisting}
+%..................................
+    \end{code}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{info}{Calculating grid dimensions}
+        We have to take care when calculating the number of blocks in the grid, i.e. \lst{blocks}:
+        \begin{center}
+            \lst{kernel@<<<@blocks, threads_per_block@>>>@(...)}
+        \end{center}
+        Most likely, the number of work items \lst{n} is not a multiple of \lst{threads_per_block}.
+        \begin{itemize}
+            \item in this case we have one thread block in which not all threads will work
+        \end{itemize}
+    \end{info}
+
+    \begin{code}{Calculating grid dimensions}
+%..................................
+        \begin{lstlisting}[style=boxcudatiny]
 auto block_size = 512;
 auto num_blocks = (n + (block_size-1)) / block_size;
 add_gpu@<<<@num_blocks, block_size@>>>@(a, b, n);
@@ -191,7 +217,7 @@ add_gpu@<<<@num_blocks, block_size@>>>@(a, b, n);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     Open \lst{cuda/exercises/axpy.cu} from the last exercise
     \begin{enumerate}
-        \item Extend the \lst{axpy_gpu} function to work for arbitrarily large input arrays
+        \item Extend the \axpy kernel for arbitrarily large input arrays (any \lst{n})
 
         \item Update the call site to calculate the grid configuration
 

@@ -249,5 +249,83 @@
         \end{enumerate}
     \end{info}
 \end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{info}{What about just increasing clock frequency?}
+        The number of operations per second that can be performed is directly proportional to CPU frequency
+        \begin{itemize}
+            \item increasing frequency is a great way to increase performance
+        \end{itemize}
+        Power consumption is a function of frequency $f$
+        $$P_{\text{dynamic}}=CV^2f$$
+        However voltage $V$ is proportional to frequency, so power increases \emph{super-linearly} with clock frequency
+        \begin{itemize}
+            \item increasing frequency is an even better way to increase power consumption!
+        \end{itemize}
+    \end{info}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{info}{Clock frequency won't increase}
+        In fact, clock frequencies have been going down as the number of cores increases
+        \begin{itemize}
+            \item a 4-core Haswell processor at 3.5 GHz (4*3.5=14 Gops/second) has the same power consumption as a 12-core Haswell at 2.6 GHz (12*2.6=31 Gops/second)
+            \item a K20X GPU with 2688 CUDA cores runs at 800 MHz
+        \end{itemize}
+    \end{info}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{info}{Parallelism will increase}
+        \begin{itemize}
+            \item the number of cores in both CPUs and accelerators will continue to increase
+            \item the width of vector lanes in CPUs will increase
+            \begin{itemize}
+                \item currently 4 doubles for AVX
+                \item increase to 8 double for AVX-3 (KNL and Skylake)
+            \end{itemize}
+            \item the number of threads per core will increase
+            \begin{itemize}
+                \item Haswell supports 2 threads/core
+                \item KNL supports 4 threads/core
+                \item Power-8 supports 8 threads/core
+            \end{itemize}
+        \end{itemize}
+    \end{info}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{info}{Memory is slow}
+        \begin{itemize}
+            \item memory is much slower than processors
+            \begin{itemize}
+                \item for both CPU and GPU the latency of fetching a cache-line from memory is 100s of cyles
+                \item that is 100s of cycles that the processor is not doing work
+            \end{itemize}
+        \end{itemize}
+    \end{info}
+    \begin{info}{CPUs rely on caches and prefetching}
+        \begin{itemize}
+            \item use fast on-chip memory to ``cache'' frequently used data
+            \item use hardware to ``prefetch'' data to cache before it is required
+        \end{itemize}
+    \end{info}
+    \begin{info}{GPUs rely on over-subscription}
+        \begin{itemize}
+            \item schedule many threads per core
+            \item threads that are waiting for data are idle
+        \end{itemize}
+    \end{info}
+\end{frame}
+
 \end{document}
 

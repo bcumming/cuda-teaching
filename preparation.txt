@@ -34,8 +34,7 @@ This implements the sum for an array of integers. What if we also want to work w
         return partial_sum;
     }
 
-This will automatically choose the correct implementation depending on whether a pointer to integer or pointer to double is passed when the function is called.
-
+This will automatically choose the correct implementation depending on whether a pointer to integer or pointer to double is passed when the function is called.  
 The downside of this approach is that it doesn't scale: each time we want to support a new type we have to cut and paste a previous definition of our `sum` function, and reimplement it for the new type. If we discovered a better method for finding the sum, we would have to modify all of the implementations to use the new method: a time consuming and bug-prone approach.
 
 C++ templates provide a simple mechanism that allows us to write our `sum` function once in a generic manner, that describes how to 

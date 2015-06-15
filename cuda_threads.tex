@@ -30,7 +30,7 @@
 \begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{info}{Scaled Vector Addition (\axpy)}
-        The exercises use CUBLAS to perform scaled vector addition
+        The exercise in the first section used CUBLAS to perform scaled vector addition
             $$y = y + \alpha x$$
             \vspace{-15pt}
         \begin{itemize}
@@ -75,7 +75,7 @@ void axpy(double *y, double *x, double a, int n) {
 
 void add_cpu(int *a, int *b, int n){
   for(auto i=0; i<n; ++i)
-    a[i] += b[i];
+    a[i] = a[i] + b[i];
 }
         \end{lstlisting}
 %..................................
@@ -88,7 +88,7 @@ void add_cpu(int *a, int *b, int n){
 __global__
 void add_gpu(int *a, int *b, int n){
   auto i = threadIdx.x;
-  a[i] += b[i];
+  a[i] = a[i] + b[i];
 }
         \end{lstlisting}
 %..................................
@@ -100,7 +100,7 @@ void add_gpu(int *a, int *b, int n){
     \begin{info}{}
     \begin{itemize}
         \item \lst{__global__} keyword indicates a kernel that called from the host
-        \item \lst{ThreadIdx} used to find unique id of each thread
+        \item \lst{threadIdx} used to find unique id of each thread
     \end{itemize}
     \end{info}
 \end{frame}
@@ -111,7 +111,7 @@ void add_gpu(int *a, int *b, int n){
     \begin{info}{launching a kernel}
     \begin{itemize}
         \item host code launches a kernel on the GPU \emph{asyncronously}
-        \item CUDA provides special \lst{<<<_,_@>>>@} syntax for launching a kernel
+        \item CUDA provides special \lst{@<<<@_,_@>>>@} syntax for launching a kernel
         \begin{itemize}
             \item \lst{foo@<<<@1, num_threads@>>>@(args... )} will launch the kernel \lst{foo} with \lst{num_threads} parallel threads.
         \end{itemize}

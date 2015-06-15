@@ -57,7 +57,7 @@ void twice_blur(float *in, float *out, int n){
 
         \begin{column}{0.7\textwidth}
             \begin{info}{Block-Level synchronization}
-            CUDA provides mechanisms for cooperation between \emph{threads in a thread block}.
+            CUDA provides mechanisms for \emph{cooperation between threads in a thread block}.
             \begin{itemize}
                 \item All threads in a block run on the same SMX
                 \item Resources for synchronization are at SMX level
@@ -243,8 +243,8 @@ blur_shared@<<<@1, block_dim, size_in_bytes@>>>@(x0, x1, n);
     \begin{info}{Is it worth it?}
         A version of the blur kernel for arbitrarily large $n$ is provided in \lst{blur.cu} in the example code. The implementation is a bit awkward:
         \begin{itemize}
-            \item  The \lst{in} and \lst{out} arrays use global indexes
-            \item  The shared memory uses thread block local indexes
+            \item  the \lst{in} and \lst{out} arrays use global indexes
+            \item  the shared memory uses thread block local indexes
         \end{itemize}
         The \textasciitilde10\% performance improvement might be worth it, depending on how important the kernel is to overall application performance
     \end{info}
@@ -254,15 +254,13 @@ blur_shared@<<<@1, block_dim, size_in_bytes@>>>@(x0, x1, n);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \begin{info}{Buffering with shared memory}
-        Shared memory is important for caching intermediate results used in pipelined operations
+    \begin{info}{Buffering}
+        A pipelined workflow uses the output of one ``kernel'' as the input of another
         \begin{itemize}
-            \item shared memory is an order of magnitude faster than global DRAM
-            \item by \emph{fusing} pipelined operations in one kernel, intermediate results can be stored in shared memory
-            \item similar to blocking and tiling for cache
+            \item on the CPU these can be optimized by keeping the intermediate result in cache for the second kernel
         \end{itemize}
+        An example is two stencils, applied in order
     \end{info}
-
 
     \begin{code}{Double blur: basic OpenMP}
         \begin{lstlisting}[style=boxcudatiny]
@@ -320,7 +318,22 @@ void blur_twice(const double* in , double* out , int n) {
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \begin{code}{double blur: CUDA with shared memory}
+    \begin{info}{Buffering with shared memory}
+        Shared memory is important for caching intermediate results used in pipelined operations
+        \begin{itemize}
+            \item shared memory is an order of magnitude faster than global DRAM
+            \item by \emph{fusing} pipelined operations in one kernel, intermediate results can be stored in shared memory
+            \item similar to blocking and tiling for cache on the CPU
+        \end{itemize}
+    \end{info}
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{code}{Double blur: CUDA with shared memory}
         \begin{lstlisting}[style=boxcudatiny]
 __global__ void blur_twice(const double *in, double* out, int n) {
   extern __shared__ double buffer[];
@@ -356,9 +369,9 @@ __global__ void blur_twice(const double *in, double* out, int n) {
     \begin{info}{Fused loop results}
         The OpenMP cache-aware version was harder to implement than the shared-memory CUDA version
         \begin{itemize}
-            \item CUDA is harder to start because it makes us to think in parallel always
+            \item CUDA is harder to start because it forces us to think and write in parallel
         \end{itemize}
-        Both implementations benefit significantly from optimizations for fast on chip memory
+        both implementations benefit significantly from optimizations for fast on chip memory
     \end{info}
     \begin{columns}[T]
         \begin{column}{0.5\textwidth}
@@ -424,18 +437,18 @@ __global__ void blur_twice(const double *in, double* out, int n) {
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{info}{CPU : optimizing for on-chip memory}
         \begin{itemize}
-            \item Let hardware prefetcher automatically manage cache
-            \item Choose block/tile sizes so that intermediate data will fit in a target cache (L1, L2 or L3)
+            \item let hardware prefetcher automatically manage cache
+            \item choose block/tile sizes so that intermediate data will fit in a target cache (L1, L2 or L3)
         \end{itemize}
     \end{info}
     \begin{info}{GPU : optimizing for on-chip memory}
         \begin{itemize}
-            \item Manage shared memory manually
+            \item manage shared memory manually
             \begin{itemize}
                 \item more control
                 \item hardware-specific
             \end{itemize}
-            \item Choose thread block sizes so that intermediate data will fit into shared memory on an SMX
+            \item choose thread block sizes so that intermediate data will fit into shared memory on an SMX
         \end{itemize}
     \end{info}
 

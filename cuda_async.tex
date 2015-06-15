@@ -172,7 +172,7 @@ kernel_3@<<<@,,,stream_1@>>>@();
         Pinned memory (or page-locked) memory will not be paged out to disk when memory runs low
         \begin{itemize}
             \item the GPU can safely remotely read/write the memory directly without host involvement
-            \item only use for transfers, because you run out of memory
+            \item only use for transfers, because it easy to run out of memory
         \end{itemize}
     \end{info}
 
@@ -314,7 +314,7 @@ cudaFreeHost(hptr);
 \begin{frame}[fragile]{Exercises}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{enumerate}
-        \item time to visit \lst{util.h} and look at helpers for
+        \item open \lst{util.h} and look at the helpers for
         \begin{itemize}
             \item asynchronous copy
             \item pinned allocation
