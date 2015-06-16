@@ -39,7 +39,7 @@
     \begin{info}{CUDA uses C pointers to reference GPU memory}
         \centering \lst{double *data = // pass an address to either host or device memory}
         \begin{itemize}
-            \item a pointer can hold an address in \emph{either} device or host memory
+            \item a pointer can hold an address in \emph{either} device \emph{or} host memory
             \item accessing a device pointer in host code, or vice versa, is \emph{undefined behaviour}
             \item we have to take care that we know which memory space a pointer is addressing
         \end{itemize}
@@ -141,17 +141,19 @@ cudaMemcpy(v_h, v_d, size, cudaMemcpyDeviceToHost);
 
     \begin{code}{Copy 100 doubles to device \emph{with error checking}}
 %..................................
-        \begin{lstlisting}[style=boxcuda]
+        \begin{lstlisting}[style=boxcudatiny]
 double *v_d;
 int size = sizeof(double)*100;
 double *v_host = (double*)malloc(size);
-cudaError_t status = cudaMalloc(&v_d, size);
+cudaError_t status;
+
+status = cudaMalloc(&v_d, size);
 if(status != cudaSuccess) {
   printf("cuda error : %s\n", cudaGetErrorString(status));
   exit(1);
 }
-status =
-  cudaMemcpy(v_d, v_h, size, cudaMemcpyHostToDevice);
+
+status = cudaMemcpy(v_d, v_h, size, cudaMemcpyHostToDevice);
 if(status != cudaSuccess) {
   printf("cuda error : %s\n", cudaGetErrorString(status));
   exit(1);
@@ -161,18 +163,17 @@ if(status != cudaSuccess) {
     \end{code}
 
     \begin{info}{It is essential to test for errors}
-        But it is tedious and obfuscates our source code
+        But it is tedious and obfuscates our source code if it is done in line for every API and kernel call\ldots
     \end{info}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{Exercise: API Basics}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    Open \lst{cuda/exercises/util.h}
+    Open \lst{cuda/exercises/axpy/util.h}
     \begin{enumerate}
         \item what does \lst{cuda_check_error()} do?
-
-        \item look at the template wrappers \lst{malloc_host} and \lst{malloc_device}
+        \item look at the template wrappers \lst{malloc_host} \& \lst{malloc_device}
         \begin{itemize}
             \item what do they do?
             \item what are the benefits over using \lst{cudaMalloc} and \lst{free} directly?
@@ -181,7 +182,7 @@ if(status != cudaSuccess) {
 
         \item write a wrapper around \lst{cudaMemcpy} for copying data from host to device
         \begin{itemize}
-            \item use the example for the reverse operation \lst{copy_device_to_host_sync}
+            \item use the example for the reverse operation \lst{copy_to_host}
             \item remember to check for errors!
         \end{itemize}
 

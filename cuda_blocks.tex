@@ -198,8 +198,8 @@ add_gpu@<<<@num_blocks, block_size@>>>@(a, b, n);
         \begin{lstlisting}[style=boxcudatiny]
 int block_size, min_grid_dim;
 
-cudaOccupancyMaxPotentialBlockSize
-  (&min_grid_size, &block_size, add_gpu, 0, n);
+cudaOccupancyMaxPotentialBlockSize(&min_grid_size, &block_size,
+                                   add_gpu, 0, n);
 auto num_blocks = (n + (block_size-1)) / block_size;
 
 add_gpu@<<<@num_blocks, block_size@>>>@(a, b, n);
@@ -215,7 +215,7 @@ add_gpu@<<<@num_blocks, block_size@>>>@(a, b, n);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{Exercise: Blocks}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    Open \lst{cuda/exercises/axpy.cu} from the last exercise
+    Open \lst{cuda/exercises/axpy/axpy.cu} from the last exercise
     \begin{enumerate}
         \item Extend the \axpy kernel for arbitrarily large input arrays (any \lst{n})
 
