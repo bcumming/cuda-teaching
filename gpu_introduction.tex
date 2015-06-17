@@ -173,9 +173,21 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \begin{center}
-        \includegraphics[width=0.9\textwidth]{./images/node.pdf}
-    \end{center}
+    \begin{info}{Quick survey of participants}
+        Would any body like to pair up for the practicals?
+        \begin{itemize}
+            \item it would be good to form teams that can share C++ and terminal/Linux skills
+        \end{itemize}
+    \end{info}
+
+    \begin{info}{Logging in}
+        Can everybody try to log into Piz Daint?
+        \begin{center}
+            \verb!ssh username@daint!
+        \end{center}
+        Let us know if you need help
+    \end{info}
+
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -199,12 +211,28 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \begin{info}{Current applications are not designed for many core}
+    \begin{center}
+        \includegraphics[width=0.9\textwidth]{./images/node.pdf}
+    \end{center}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{info}{Most current applications are not designed for many core}
         \begin{itemize}
             \item exposing sufficient fine-grained parallelism for multi and many core processors is hard
             \item new programming models are required
             \item new algorithms are required
             \item existing code has to be rewritten or refactored
+        \end{itemize}
+    \end{info}
+
+    \begin{info}{... and compute nodes are under-utilized}
+        \begin{itemize}
+            \item users are not getting the most out of allocations
+            \item the amount of parallelism on-node is only going to increase!
         \end{itemize}
     \end{info}
 \end{frame}
@@ -309,20 +337,52 @@
             \item memory is much slower than processors
             \begin{itemize}
                 \item for both CPU and GPU the latency of fetching a cache-line from memory is 100s of cyles
-                \item that is 100s of cycles that the processor is not doing work
+                \item that is 100s of cycles that the processor is stalled, unable to ``work''
+                \item latency has to be hidden or reduced to minimise stalling
             \end{itemize}
         \end{itemize}
     \end{info}
-    \begin{info}{CPUs rely on caches and prefetching}
+    \begin{info}{CPU solution: deep caches and prefetching}
         \begin{itemize}
-            \item use fast on-chip memory to ``cache'' frequently used data
-            \item use hardware to ``prefetch'' data to cache before it is required
+            \item use fast on-chip memory to \emph{cache} frequently used data
+            \item use hardware to \emph{prefetch} data to cache before it is required
         \end{itemize}
     \end{info}
-    \begin{info}{GPUs rely on over-subscription}
+    \begin{info}{GPU solution: over subscribe threads to cores}
         \begin{itemize}
             \item schedule many threads per core
             \item threads that are waiting for data are idle
+        \end{itemize}
+    \end{info}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{info}{TLDR: change because power}
+        Writing good concurrent code for many-core is difficult
+        \begin{itemize}
+            \item but the days of easy speed up each generation of CPU are over
+            \begin{itemize}
+                \item performance gains must not increase power consumption from now on
+            \end{itemize}
+            \item to continue improving performance many-core will be required
+            \item this course will be about one type of many-core architecture NVIDIA GPUs
+            \begin{itemize}
+                \item both CUDA and OpenACC are GPU-specific
+                \item but the concepts will be universally applicable to other many-core architectures (e.g. Xeon Phi)
+            \end{itemize}
+        \end{itemize}
+    \end{info}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{info}{Terminology}
+        \begin{itemize}
+            \item the CPU and its memory are called the \emph{host} (because GPUs require a host CPU to coordinate them)
+            \item the GPU and its memory are referred to as the \emph{device}
         \end{itemize}
     \end{info}
 \end{frame}
