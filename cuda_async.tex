@@ -314,13 +314,33 @@ cudaFreeHost(hptr);
 \begin{frame}[fragile]{Exercises}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{enumerate}
-        \item open \lst{util.h} and look at the helpers for
+        \item Open \lst{util.h} in \lst{cuda/examples/async} and look at the helpers for
         \begin{itemize}
-            \item asynchronous copy
-            \item pinned allocation
+            \item asynchronous copy \lst{copy_to_@\{@host@/@device@\}@_async()}
+            \item pinned allocation \lst{malloc_pinned_host()}
         \end{itemize}
-        \item walk through event and stream wrapper classes
-        \item walk through the memcopy examples
+
+        \item Open \lst{CudaEvent.h} and \lst{CudaStream.h}
+        \begin{itemize}
+            \item what is the purpose of these classes?
+            \item what does \lst{CudaStream::enqueue_event()} do?
+        \end{itemize}
+
+        \item Open \lst{memcopy1.cu} and run
+        \begin{itemize}
+            \item what does the benchmark test?
+            \item what is the effect of turning on \lst{USE_PINNED}?\\Hint: try small and large values for \lst{n} (8, 16, 20, 24)
+        \end{itemize}
+
+        \item Inspect \lst{memcopy2.cu} and run
+        \begin{itemize}
+            \item what effect does changing the number of chunks have?
+        \end{itemize}
+
+        \item Walk through \lst{memcopy3.cu}
+        \begin{itemize}
+            \item what effect does changing the number of chunks have?
+        \end{itemize}
     \end{enumerate}
 \end{frame}
 

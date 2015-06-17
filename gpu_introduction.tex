@@ -170,6 +170,10 @@
 % TITLE SLIDE
 \cscstitle
 
+%++++++++++++++++++++++++++++++++
+\cscschapter{Before We Start}
+%++++++++++++++++++++++++++++++++
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -189,6 +193,10 @@
     \end{info}
 
 \end{frame}
+
+%++++++++++++++++++++++++++++++++
+\cscschapter{Why GPUs?}
+%++++++++++++++++++++++++++++++++
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{}
@@ -383,6 +391,37 @@
         \begin{itemize}
             \item the CPU and its memory are called the \emph{host} (because GPUs require a host CPU to coordinate them)
             \item the GPU and its memory are referred to as the \emph{device}
+        \end{itemize}
+    \end{info}
+\end{frame}
+
+%++++++++++++++++++++++++++++++++
+\cscschapter{Using GPUs in Your Application}
+%++++++++++++++++++++++++++++++++
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{info}{Libraries}
+        \begin{itemize}
+            \item use an off the shelf solution implemented in a library
+            \item for specific tasks like dense linear algebra and FFTs, libraries are very hard to beat
+            \item e.g. cublas, PETSc, cuFFT
+        \end{itemize}
+    \end{info}
+
+    \begin{info}{Directives}
+        \begin{itemize}
+            \item OpenACC and OpenMP 4 define \emph{directives} that can be used to instruct the compiler how to generate GPU code
+            \item in theory easy to port codes
+        \end{itemize}
+    \end{info}
+
+    \begin{info}{GPU-specific Languages}
+        \begin{itemize}
+            \item languages designed for GPU programming
+            \item maximum flexibility and performance
+            \item e.g. CUDA and OpenCL
         \end{itemize}
     \end{info}
 \end{frame}

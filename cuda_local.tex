@@ -382,9 +382,12 @@ __global__ void blur_twice(const double *in, double* out, int n) {
                     height=0.7\textwidth,
                     width=\textwidth,
                     ymin=0,
-                    ticks=none,
+                    %ticks=none,
+                    ytick={0},
                     title={openmp},
-                    title style={yshift=-1.5ex}
+                    title style={yshift=-1.5ex},
+                    xtick={0.94, 1.06},
+                    xticklabels={\color{blue}{na\"ive}, \color{green!30!black}{blocked}}
                 ]
                 \addplot
                     [draw=black, fill=blue!30, bar width=1cm]
@@ -408,9 +411,12 @@ __global__ void blur_twice(const double *in, double* out, int n) {
                     height=0.7\textwidth,
                     width=\textwidth,
                     ymin=0,
-                    ticks=none,
+                    %ticks=none,
+                    ytick={0},
                     title={cuda},
-                    title style={yshift=-1.5ex}
+                    title style={yshift=-1.5ex},
+                    xtick={0.94, 1.06},
+                    xticklabels={\color{blue}{na\"ive}, \color{green!30!black}{shared}}
                 ]
 
                 \addplot
