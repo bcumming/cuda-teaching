@@ -73,7 +73,7 @@ host_2(...);
 \begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{info}{Streams}
-        A CUDA stream is is a sequence of operations that execute in \emph{issue order} on the GPU
+        A CUDA stream is a sequence of operations that execute in \emph{issue order} on the GPU
         \begin{itemize}
             \item CUDA operations are kernels and copies between host and device memory spaces
         \end{itemize}
@@ -105,7 +105,7 @@ host_2(...);
         \end{itemize}
     \end{info}
 
-    \begin{code}{Basic cuda stream useage}
+    \begin{code}{Basic cuda stream usage}
         \begin{lstlisting}[style=boxcudatiny]
 // create stream
 cudaStream_t stream;
@@ -132,7 +132,7 @@ kernel_3@<<<@,,,stream_1@>>>@();
                 \end{lstlisting}
             \end{codecolumn}
             \begin{itemize}
-                \item \footnotesize \lst{kernel_1} and \lst{kernel_2} are serialized in \lst{stream_1}
+                \item \footnotesize \lst{kernel_1} and \lst{kernel_3} are serialized in \lst{stream_1}
                 \item \lst{kernel_2} can run asynchronously in \lst{stream_2}
                 \item note that \lst{kernel_2} will only run concurrently if there are sufficient resources available on the GPU, i.e. if \lst{kernel_1} is not using all of the SMXs.
             \end{itemize}
@@ -227,7 +227,7 @@ kernel_3@<<<@,,,stream_1@>>>@();
             \begin{itemize}
                 \item create and free \lst{cudaEvent_t}
             \end{itemize}
-        \lst{cudaEventRecord(cudaEvent_t, cudaStream_t_);}
+        \lst{cudaEventRecord(cudaEvent_t, cudaStream_t);}
             \begin{itemize}
                 \item enqueue an event in a stream
             \end{itemize}

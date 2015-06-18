@@ -33,7 +33,7 @@ void prefix_sum(int *x, int n){
 %----------------------------
 \vspace{-7pt}
 %----------------------------
-    \begin{code}{fusing piplined stencil loops : e.g. apply blur kernel twice}
+    \begin{code}{fusing pipelined stencil loops : e.g. apply blur kernel twice}
         \begin{lstlisting}[style=boxcudatiny]
 void twice_blur(float *in, float *out, int n){
   float buff[n];
@@ -86,7 +86,7 @@ void twice_blur(float *in, float *out, int n){
 \begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{info}{One-dimensional blur kernel}
-        \centering $\text{out}_i \leftarrow 0.25(\text{in}_{i-1}+2\text{in}_i+\text{in}_{i+1})$
+        \centering $\text{out}_i \leftarrow 0.25\times(\text{in}_{i-1}+2\times\text{in}_i+\text{in}_{i+1})$
         \begin{itemize}
             \item each output value is a linear combination of neighbours in input array
             \item first we look at naiive implementation
@@ -98,7 +98,7 @@ void twice_blur(float *in, float *out, int n){
 void blur(double *in, double *out, int n){
   float buff[n];
   for(auto i=1; i<n-1; ++i)
-    out[i] = 0.25*(2*in[i]+in[i-1]+in[i+1]);
+    out[i] = 0.25*(in[i-1] + 2*in[i] + in[i+1]);
 }
         \end{lstlisting}
     \end{code}

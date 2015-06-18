@@ -176,6 +176,7 @@ add_gpu@<<<@num_blocks, block_size@>>>@(a, b, n);
     \begin{code}{Calculating grid dimensions}
 %..................................
         \begin{lstlisting}[style=boxcudatiny]
+// in main()
 auto block_size = 512;
 auto num_blocks = (n + (block_size-1)) / block_size;
 add_gpu@<<<@num_blocks, block_size@>>>@(a, b, n);
