@@ -23,6 +23,10 @@
             \item I assume C++ knowledge
             \begin{itemize}
                 \item I will be using C++11 (the bits that make C++ easier!)
+                \item there is no native CUDA implementation for Fortran
+                \begin{itemize}
+                    \item there is a CUDA Fortran provided by PGI, however it is not widely used.
+                \end{itemize}
                 \item Fortran users are encouraged to work with a C++ user for the practical exercises
             \end{itemize}
             \item the generic GPU programming concepts in the CUDA part will be useful for people interested in OpenACC
@@ -36,8 +40,8 @@
     \begin{info}{CUDA language is a superset of C++}
         \begin{itemize}
             \item write CPU code using C++ (C++11 since CUDA 6.5)
-            \item write kernels to run on GPU using new keywords
-            \item use special syntax for launching kernels on GPU
+            \item keywords for writing tasks to be executed by GPU threads (kernels)
+            \item use special syntax for launching tasks/kernels on GPU
         \end{itemize}
     \end{info}
 
