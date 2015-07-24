@@ -50,31 +50,31 @@
 \node[core] (core7) [right = 1cm of core6] {\huge\textbf{7}};
 
 \node[res] (one0) [below = 1cm of core0] {\huge\textbf{+}};
-\node[res] (one1) [below = 1cm of core2] {\huge\textbf{+}};
-\node[res] (one2) [below = 1cm of core4] {\huge\textbf{+}};
-\node[res] (one3) [below = 1cm of core6] {\huge\textbf{+}};
+\node[res] (one1) [below = 1cm of core1] {\huge\textbf{+}};
+\node[res] (one2) [below = 1cm of core2] {\huge\textbf{+}};
+\node[res] (one3) [below = 1cm of core3] {\huge\textbf{+}};
 
 \path[pil,->] (core0.south)  edge (one0.north);
-\path[pil,->] (core1.south)  edge (one0.north);
-\path[pil,->] (core2.south)  edge (one1.north);
-\path[pil,->] (core3.south)  edge (one1.north);
-\path[pil,->] (core4.south)  edge (one2.north);
-\path[pil,->] (core5.south)  edge (one2.north);
-\path[pil,->] (core6.south)  edge (one3.north);
-\path[pil,->] (core7.south)  edge (one3.north);
+\path[pil,->] (core1.south)  edge (one1.north);
+\path[pil,->] (core2.south)  edge (one2.north);
+\path[pil,->] (core3.south)  edge (one3.north);
+\path[pil,->,red] (core4.south)  edge (one0.north);
+\path[pil,->,red] (core5.south)  edge (one1.north);
+\path[pil,->,red] (core6.south)  edge (one2.north);
+\path[pil,->,red] (core7.south)  edge (one3.north);
 
 \node[res] (two0) [below = 1cm of one0] {\huge\textbf{+}};
-\node[res] (two1) [below = 1cm of one2] {\huge\textbf{+}};
+\node[res] (two1) [below = 1cm of one1] {\huge\textbf{+}};
 
 \path[pil,->] (one0.south)  edge (two0.north);
-\path[pil,->] (one1.south)  edge (two0.north);
-\path[pil,->] (one2.south)  edge (two1.north);
-\path[pil,->] (one3.south)  edge (two1.north);
+\path[pil,->] (one1.south)  edge (two1.north);
+\path[pil,->,red] (one2.south)  edge (two0.north);
+\path[pil,->,red] (one3.south)  edge (two1.north);
 
 \node[res] (result) [below = 1cm of two0] {\huge\textbf{+}};
 
 \path[pil,->] (two0.south)  edge (result.north);
-\path[pil,->] (two1.south)  edge (result.north);
+\path[pil,->,red] (two1.south)  edge (result.north);
 
 \end{tikzpicture}
 

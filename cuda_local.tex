@@ -75,8 +75,13 @@ void twice_blur(float *in, float *out, int n){
     %\begin{info}{}
         Cooperation between threads requires sharing of data
         \begin{itemize}
-            \item All threads in a block can share data using \emph{shared memory}
-            \item Shared memory is \emph{not visible} to threads in other thread blocks
+            \item all threads in a block can share data using \emph{shared memory}
+            \item shared memory is \emph{not visible} to threads in other thread blocks
+            \item all threads in a block are on the same SMX
+            \item no synchronization possible between threads in different thread blocks
+            \begin{itemize}
+                \item ... except via atomic operations on global memory
+            \end{itemize}
         \end{itemize}
     %\end{info}
 
@@ -267,11 +272,11 @@ blur_shared@<<<@1, block_dim, size_in_bytes@>>>@(x0, x1, n);
 void blur_twice(const double* in , double* out , int n) {
   static double* buffer = malloc_host<double>(n);
 
-  #pragma omp parallel for
+  @#pragma omp parallel for@
   for(auto i=1; i<n-1; ++i) {
     buffer[i] = 0.25*( in[i-1] + 2.0*in[i] + in[i+1]);
   }
-  #pragma omp parallel for
+  @#pragma omp parallel for@
   for(auto i=2; i<n-2; ++i) {
     out[i] = 0.25*( buffer[i-1] + 2.0*buffer[i] + buffer[i+1]);
   }
@@ -296,7 +301,7 @@ void blur_twice(const double* in , double* out , int n) {
     return 0.25*( u[pos-1] + 2.0*u[pos] + u[pos+1]);
   };
 
-  #pragma omp parallel for
+  @#pragma omp parallel for@
   for(auto b=0; b<num_blocks; ++b) {
     auto tid = omp_get_thread_num();
     auto first = 2 + b*block_size;
@@ -369,7 +374,7 @@ __global__ void blur_twice(const double *in, double* out, int n) {
     \begin{info}{Fused loop results}
         The OpenMP cache-aware version was harder to implement than the shared-memory CUDA version
         \begin{itemize}
-            \item CUDA is harder to start because it forces us to think and write in parallel
+            \item CUDA is initially harder because we have to think and write in parallel from the start
         \end{itemize}
         both implementations benefit significantly from optimizations for fast on chip memory
     \end{info}
@@ -463,18 +468,18 @@ __global__ void blur_twice(const double *in, double* out, int n) {
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{Exercise: Shared Memory}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    Your task is to implement dot product in CUDA in \lst{cuda/exercises/dot.cu}.
     \begin{itemize}
-        \item the host version has been implemented as \lst{dot_host()}
-        \item assume that $n$ is a power of 2 and $n\leq1024$
+        \item finish the \lst{shared/string_reverse.cu} example
+        \item implement a dot product in CUDA in \lst{shared/dot.cu}.
+        \begin{itemize}
+            \item the host version has been implemented as \lst{dot_host()}
+            \item assume that $n$ is a power of 2 and $n\leq1024$
+            \item \emph{extra}: can you make it work for arbitrary $n\leq1024$?
+            \item \emph{extra}: how would you extend it to work for arbitrary $n>1024$ and $n$ threads?
+        \end{itemize}
     \end{itemize}
-
-    Extensions :
-    \begin{enumerate}
-        \item can you make it work for arbitrary $n<1024$?
-        \item how would you extend it to work for arbitrarily large $n$?
-    \end{enumerate}
 
     \centering \includegraphics[width=0.5\textwidth]{./images/reduction.pdf}
 
 \end{frame}
+

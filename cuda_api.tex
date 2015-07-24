@@ -19,7 +19,7 @@
             \item data must be in device memory for kernels to access
                 \begin{itemize}
                     \item not strictly true\ldots
-                    \item but a strict requirement for high performance in vast majority of cases (if you have to ask, it won't be good for you)
+                    \item but a strict requirement for high performance in vast majority of cases
                 \end{itemize}
             \item ensure data is in the right memory space \emph{before} computation starts
             \item on Piz Daint the respective bandwidths are:
@@ -97,7 +97,7 @@ cudaFree(v);                   // free memory
     \begin{code}{Copy 100 doubles to device, then back to host}
 %..................................
         \begin{lstlisting}[style=boxcuda]
-int size = 100*sizeof(double); // size in bytes
+auto size = 100*sizeof(double); // size in bytes
 double *v_d;
 cudaMalloc(&v_d, size);              // allocate on device
 double *v_h = (double*)malloc(size); // allocate on host
@@ -148,7 +148,7 @@ cudaMemcpy(v_h, v_d, size, cudaMemcpyDeviceToHost);
 %..................................
         \begin{lstlisting}[style=boxcudatiny]
 double *v_d;
-int size = sizeof(double)*100;
+auto size = sizeof(double)*100;
 double *v_host = (double*)malloc(size);
 cudaError_t status;
 

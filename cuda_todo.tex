@@ -3,20 +3,38 @@
 %++++++++++++++++++++++++++++++++
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\begin{frame}[fragile]{2D}
+\begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%    \begin{info}{}
-%        Section about launch configurations
-%        \begin{itemize}
-%            \item \lst{dim3}
-%            \item using \lst{threadIdx.x/y/z} etc.
-%        \end{itemize}
-%        do 2D stencil example
-%
-%        Take the opportunity to talk about asynchronous communication and MPI
-%    \end{info}
-%
-%\end{frame}
+    \begin{info}{Multi-dimension launch}
+        Section about launch configurations
+        \begin{itemize}
+            \item \lst{dim3}
+            \item using \lst{threadIdx.x/y/z} etc.
+        \end{itemize}
+    \end{info}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{2D Stencil Example}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    do i do this, or do I let them do it themselves?
+    \begin{code}{openmp code for a stencil}
+    \end{code}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{info}{2D stencil example}
+        \begin{itemize}
+            \item calculating position in flat array
+            \item launch configuration
+        \end{itemize}
+    \end{info}
+
+\end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{}
@@ -29,11 +47,11 @@
             \item parallel kernel launching
             \item ... ok, concurrency is hard (but concurrency is hard on the CPU too)
         \end{itemize}
-        However, there is a lot that you have to keep in mind
+        However, there is a lot that you have to keep in mind:
         \begin{itemize}
             \item where is my data?
-            \item loop free thinking: individual work items to be perfomred in parallel
-            \item synchronization between threads, host/device?
+            \item loop free thinking: individual work items to be performed in parallel
+            \item synchronization between threads, host and device?
         \end{itemize}
         Combined this makes GPU programming tough to start with.
         \begin{itemize}

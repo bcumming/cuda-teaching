@@ -318,11 +318,7 @@ cudaFreeHost(hptr);
 \begin{frame}[fragile]{Exercises}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{enumerate}
-        \item Open \lst{util.h} in \lst{cuda/examples/async} and look at the helpers for
-        \begin{itemize}
-            \item asynchronous copy \lst{copy_to_@\{@host@/@device@\}@_async()}
-            \item pinned allocation \lst{malloc_pinned_host()}
-        \end{itemize}
+        \item Open \lst{util.h} in \lst{cuda/examples/async} and understand \lst{copy_to_@\{@host@/@device@\}@_async()} and \lst{malloc_pinned_host()}
 
         \item Open \lst{CudaEvent.h} and \lst{CudaStream.h}
         \begin{itemize}
@@ -341,8 +337,9 @@ cudaFreeHost(hptr);
             \item what effect does changing the number of chunks have?
         \end{itemize}
 
-        \item Walk through \lst{memcopy3.cu}
+        \item Inspect \lst{memcopy3.cu} and run
         \begin{itemize}
+            \item how does it differ from \lst{memcopy2.cu}?
             \item what effect does changing the number of chunks have?
         \end{itemize}
     \end{enumerate}
