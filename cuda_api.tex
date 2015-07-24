@@ -19,15 +19,17 @@
             \item data must be in device memory for kernels to access
                 \begin{itemize}
                     \item not strictly true\ldots
-                    \item but a strict requirement for high performance
+                    \item but a strict requirement for high performance in vast majority of cases (if you have to ask, it won't be good for you)
                 \end{itemize}
             \item ensure data is in the right memory space \emph{before} computation starts
             \item on Piz Daint the respective bandwidths are:
-            \begin{itemize}
-                \item PCIe2 = 6 GB/s each way
-                \item Sandy Bridge CPU = 35 GB/s
-                \item K20X  = 180 GB/s
-            \end{itemize}
+            \begin{center}
+            \begin{tabular}{lr}
+                \textbf{host $\leftrightarrow$ device} & 6 GB/s \\
+                \textbf{host memory} & 35 GB/s \\
+                \textbf{device memory}  & 180 GB/s
+            \end{tabular}
+            \end{center}
         \end{itemize}
     \end{info}
 
@@ -40,10 +42,12 @@
         \centering \lst{double *data = // pass an address to either host or device memory}
         \begin{itemize}
             \item a pointer can hold an address in \emph{either} device \emph{or} host memory
-            \item accessing a device pointer in host code, or vice versa, is \emph{undefined behaviour}
-            \item we have to take care that we know which memory space a pointer is addressing
+            \begin{itemize}
+                \item accessing a device pointer in host code, or vice versa, is \emph{undefined behaviour}
+                \item we have to take care that we know which memory space a pointer is addressing
+            \end{itemize}
+            \item The CUDA runtime library provides functions that can be used to allocate, free and copy device memory
         \end{itemize}
-        The CUDA runtime library provides functions that can be used to allocate, free and copy device memory
     \end{info}
 
 \end{frame}
@@ -85,7 +89,8 @@ cudaFree(v);                   // free memory
         \item \lst{src} source pointer
         \item \lst{size} number of \emph{bytes} to copy to \lst{dst}
         \item \lst{kind} enumerated type specifying \emph{direction} of copy:
-            \lst{cudaMemcpyHostToDevice}, also \lst{DeviceToHost}, \lst{DeviceToDevice}
+            \\ one of
+            \lst{cudaMemcpyHostToDevice}, \lst{cudaMemcpyDeviceToHost}, \lst{cudaMemcpyDeviceToDevice}, \lst{cudaMemcpyHostToHost}
     \end{itemize}
     \end{info}
 
@@ -180,15 +185,13 @@ if(status != cudaSuccess) {
             \item do we need corresponding functions for \lst{cudaFree} and \lst{free}?
         \end{itemize}
 
-        \item write a wrapper around \lst{cudaMemcpy} for copying data from host to device
+        \item write a wrapper around \lst{cudaMemcpy} for copying data \texttt{host$\rightarrow$device} \& \texttt{device$\rightarrow$host}
         \begin{itemize}
-            \item use the example for the reverse operation \lst{copy_to_host}
             \item remember to check for errors!
         \end{itemize}
 
         \item compile the test and run
         \begin{itemize}
-            %\item \lst{make axpy_cublas}
             \item it will pass with no errors on success
         \end{itemize}
 

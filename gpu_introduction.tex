@@ -171,30 +171,6 @@
 \cscstitle
 
 %++++++++++++++++++++++++++++++++
-\cscschapter{Before We Start}
-%++++++++++++++++++++++++++++++++
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \begin{info}{Quick survey of participants}
-        Would any body like to pair up for the practicals?
-        \begin{itemize}
-            \item it would be good to form teams that can share C++ and terminal/Linux skills
-        \end{itemize}
-    \end{info}
-
-    \begin{info}{Logging in}
-        Can everybody try to log into Piz Daint?
-        \begin{center}
-            \verb!ssh username@daint!
-        \end{center}
-        Let us know if you need help
-    \end{info}
-
-\end{frame}
-
-%++++++++++++++++++++++++++++++++
 \cscschapter{Why GPUs?}
 %++++++++++++++++++++++++++++++++
 
@@ -250,7 +226,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{info}{MPI and the free lunch}
         %In 2005 Herb Sutter wrote an article called ``The Free Lunch is Over''
-        HPC applications were ported to use the message passing library MPI in the late 90s and early 200s at great cost and effort
+        HPC applications were ported to use the message passing library MPI in the late 90s and early 2000s at great cost and effort
         \begin{itemize}
             \item individual nodes with one or two CPUs
             \item break problem into chunks/sub-domains
@@ -372,7 +348,7 @@
         \begin{itemize}
             \item but the days of easy speed up each generation of CPU are over
             \begin{itemize}
-                \item performance gains must not increase power consumption from now on
+                \item performance gains must not increase power consumption
             \end{itemize}
             \item to continue improving performance many-core will be required
             \item this course will be about one type of many-core architecture NVIDIA GPUs
@@ -413,7 +389,7 @@
     \begin{info}{Directives}
         \begin{itemize}
             \item OpenACC and OpenMP 4 define \emph{directives} that can be used to instruct the compiler how to generate GPU code
-            \item in theory easy to port codes
+            \item in theory the easiest path for porting
         \end{itemize}
     \end{info}
 

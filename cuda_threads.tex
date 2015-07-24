@@ -31,13 +31,13 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{info}{Scaled Vector Addition (\axpy)}
         The exercise in the first section used CUBLAS to perform scaled vector addition
-            $$y = y + \alpha x$$
+            $$\mathbf{y} = \mathbf{y} + \alpha \mathbf{x}$$
             \vspace{-15pt}
         \begin{itemize}
-            \item $x$ and $y$ are vectors of length $n$
-            \item $\alpha$ is scalar
+            \item $\mathbf{x}$ and $\mathbf{y}$ are vectors of length $n$ \hfill $x,y \in \mathbb{R}^n$
+            \item $\alpha$ is scalar \hfill $\alpha\in\mathbb{R}$
         \end{itemize}
-        \axpy can be expressed into $n$ independent operations
+        \axpy can be performed as $n$ \emph{independent} operations
         $$y_i \leftarrow y_i + a*x_i,\quad i = {0, 1, \dots, n-1}$$
         which can be performed independently and in any order
     \end{info}
@@ -99,7 +99,7 @@ void add_gpu(int *a, int *b, int n){
     \vspace{-2pt}
     \begin{info}{}
     \begin{itemize}
-        \item \lst{__global__} keyword indicates a kernel that called from the host
+        \item \lst{__global__} keyword indicates a kernel
         \item \lst{threadIdx} used to find unique id of each thread
     \end{itemize}
     \end{info}
@@ -113,7 +113,7 @@ void add_gpu(int *a, int *b, int n){
         \item host code launches a kernel on the GPU \emph{asyncronously}
         \item CUDA provides special \lst{@<<<@_,_@>>>@} syntax for launching a kernel
         \begin{itemize}
-            \item \lst{foo@<<<@1, num_threads@>>>@(args... )} will launch the kernel \lst{foo} with \lst{num_threads} parallel threads.
+            \item \lst{add_gpu@<<<@1, num_threads@>>>@(args... )} will launch the kernel \lst{add_gpu} with \lst{num_threads} parallel threads.
         \end{itemize}
     \end{itemize}
     \end{info}

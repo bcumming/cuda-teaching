@@ -66,7 +66,7 @@
     numberstyle=\lstfont{white},
     stringstyle=\lstfont{cyan},
     commentstyle=\lstfont{yellow!30!white},
-    moredelim=[is][\lstfont{green!60!white}]{@}{@},
+    moredelim=[is][\lstfont{green!50!white}]{@}{@},
     emph={
         cudaMalloc, cudaFree,
         cudaMallocHost, cudaFreeHost,
@@ -82,9 +82,9 @@
         cudaStreamWaitEvent,
         threadIdx, blockIdx, blockDim, gridDim,
         cudaStream_t, cudaStreamCreate, cudaStreamDestroy,
-        \<\<\<,
+        cudaMemcpyDeviceToDevice, cudaMemcpyHostToHost,
     },
-    emphstyle={\lstfont{green!60!white}},
+    emphstyle={\lstfont{green!50!white}},
     breaklines=true
 }
 
@@ -102,7 +102,7 @@
     numberstyle=\lstfont{white},
     stringstyle=\lstfont{cyan},
     commentstyle=\lstfont{yellow!30!white},
-    moredelim=[is][\lstfont{green!60!white}]{@}{@},
+    moredelim=[is][\lstfont{green!50!white}]{@}{@},
     emph={
         cudaMalloc, cudaFree,
         cudaMallocHost, cudaFreeHost,
@@ -118,9 +118,9 @@
         cudaStreamWaitEvent,
         threadIdx, blockIdx, blockDim, gridDim,
         cudaStream_t, cudaStreamCreate, cudaStreamDestroy,
-        \<\<\<,
+        cudaMemcpyDeviceToDevice, cudaMemcpyHostToHost,
     },
-    emphstyle={\lstfont{green!60!white}},
+    emphstyle={\lstfont{green!50!white}},
     breaklines=true
 }
 
@@ -134,7 +134,7 @@
     numberstyle=\lsttinyfont{white},
     stringstyle=\lsttinyfont{cyan},
     commentstyle=\lsttinyfont{yellow!30!white},
-    moredelim=[is][\lsttinyfont{green!60!white}]{@}{@},
+    moredelim=[is][\lsttinyfont{green!50!white}]{@}{@},
     emph={
         cudaMalloc, cudaFree,
         cudaMallocHost, cudaFreeHost,
@@ -150,8 +150,9 @@
         cudaStreamWaitEvent,
         threadIdx, blockIdx, blockDim, gridDim,
         cudaStream_t, cudaStreamCreate, cudaStreamDestroy,
+        cudaMemcpyDeviceToDevice, cudaMemcpyHostToHost,
     },
-    emphstyle={\lstfont{green!60!white}},
+    emphstyle={\lstfont{green!50!white}},
     breaklines=true
 }
 
@@ -181,7 +182,7 @@
 \input{cuda_blocks.tex}
 \input{cuda_local.tex}
 \input{cuda_async.tex}
-%\input{cuda_todo.tex}
+\input{cuda_todo.tex}
 
 \end{document}
 

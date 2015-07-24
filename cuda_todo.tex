@@ -3,44 +3,61 @@
 %++++++++++++++++++++++++++++++++
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{2D}
+%\begin{frame}[fragile]{2D}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \begin{info}{}
-        Section about launch configurations
-        \begin{itemize}
-            \item \lst{dim3}
-            \item using \lst{threadIdx.x/y/z} etc.
-        \end{itemize}
-        do 2D stencil example
-
-        Take the opportunity to talk about asynchronous communication and MPI
-    \end{info}
-
-\end{frame}
+%    \begin{info}{}
+%        Section about launch configurations
+%        \begin{itemize}
+%            \item \lst{dim3}
+%            \item using \lst{threadIdx.x/y/z} etc.
+%        \end{itemize}
+%        do 2D stencil example
+%
+%        Take the opportunity to talk about asynchronous communication and MPI
+%    \end{info}
+%
+%\end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Intermezzo: is this so hard?}
+\begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \begin{info}{}
+    \begin{info}{Is this so hard?}
         Each topic so far has not been too complicated:
         \begin{itemize}
             \item moving memory between host and device
             \item writing kernels
             \item parallel kernel launching
+            \item ... ok, concurrency is hard (but concurrency is hard on the CPU too)
         \end{itemize}
         However, there is a lot that you have to keep in mind
         \begin{itemize}
             \item where is my data?
-            \item thinking in kernels
+            \item loop free thinking: individual work items to be perfomred in parallel
             \item synchronization between threads, host/device?
         \end{itemize}
         Combined this makes GPU programming tough to start with.
-        It would be nice to have a high-level approach, but this is an open question
         \begin{itemize}
-            \item I don't think that OpenACC and OpenMP are the answer
+            \item OpenMP and OpenACC attempt to make things ``easy'', but they still have shortcomings
         \end{itemize}
     \end{info}
 
 \end{frame}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{info}{What next?}
+        You have seen some features of CUDA
+        \begin{itemize}
+            \item not an exhaustive overview!
+            \item there are some ``essential'' features that weren't covered
+        \end{itemize}
+        And more importantly, I hope that you have started to think about parallel work items
+        \begin{itemize}
+            \item a different perspective than thinking in loops
+            \item an important skill for more than just GPU programming
+        \end{itemize}
+    \end{info}
+
+\end{frame}
 

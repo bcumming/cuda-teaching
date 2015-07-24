@@ -1,8 +1,9 @@
 % CHAPTER SLIDE
 \cscschapter{Introduction}
 
-%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{info}{The plan}
         \begin{itemize}
             \item learn about the GPU memory model
@@ -16,7 +17,9 @@
 
 \end{frame}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{info}{Prerequisites for the course}
         \begin{itemize}
             \item no GPU or graphics experience required
@@ -35,8 +38,9 @@
 
 \end{frame}
 
-%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{info}{CUDA language is a superset of C++}
         \begin{itemize}
             \item write CPU code using C++ (C++11 since CUDA 6.5)
@@ -61,14 +65,16 @@
 \end{frame}
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{info}{What about the GPU in my laptop/desktop/cluster?}
         \begin{itemize}
             \item the GPUs in Piz Daint are NVIDIA Tesla K20X devices
             \item Tesla devices are high-end products with features required for high-performance computing
             \begin{itemize}
-                \item higher double precision performance
-                \item large DRAM
+                \item high double precision performance (1.2 TFlops)
+                \item large DRAM (6 GB)
                 \item ECC memory
             \end{itemize}
             \item the K20X Tesla cards use the Kepler architecture
@@ -79,4 +85,28 @@
         \end{itemize}
     \end{info}
 
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{columns}[T]
+        \begin{column}{0.4\textwidth}
+            \includegraphics[width=\textwidth]{./images/CUDA-Handbook-Cover208_260.jpg}
+        \end{column}
+
+        \begin{column}{0.6\textwidth}
+            \begin{info}{recommended reading}
+                \textbf{\small CUDA Handbook: A Comprehensive Guide to GPU Programming}
+                \begin{itemize}
+                    \item  Nicholas Wilt
+                    \item  released in 2013
+                    \item  detailed coverage of everything you need to know
+                    \item  lots of example codes and mini-apps
+                \end{itemize}
+            \end{info}
+        \end{column}
+    \end{columns}
+    \begin{center}
+    \end{center}
 \end{frame}

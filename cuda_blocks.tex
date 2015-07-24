@@ -21,7 +21,7 @@
                 \item each \emph{block} has \lst{block_dim} \emph{threads}
                 \item for a total of \lst{grid_dim}$\times$\lst{block_dim} threads
             \end{itemize}
-            \item previously we launched just one thread block \lst{axpy<<1, n>>(...)}
+            \item previously we launched just one thread block \lst{axpy@<<<@1, n@>>>@(...)}
         \end{itemize}
     \end{info}
 
@@ -31,7 +31,7 @@
 \begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{info}{Why the additional complexity of grids+blocks+threads?}
-        Because coordination and sharing between threads doesn't scale:
+        \centering Because coordination and sharing between threads doesn't scale:
         \begin{itemize}
             \item threads in a block can synchronize and share resources
             \item this does not scale past a certain number of cores/threads
