@@ -1,0 +1,47 @@
+%++++++++++++++++++++++++++++++++
+\cscschapter{Final Thoughts}
+%++++++++++++++++++++++++++++++++
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{info}{Is this so hard?}
+        Each topic so far has not been too complicated:
+        \begin{itemize}
+            \item moving memory between host and device
+            \item writing kernels
+            \item parallel kernel launching
+            \item ... ok, concurrency is hard (but concurrency is hard on the CPU too)
+        \end{itemize}
+        However, there is a lot that you have to keep in mind:
+        \begin{itemize}
+            \item where is my data?
+            \item loop free thinking: individual work items to be performed in parallel
+            \item synchronization between threads, host and device?
+        \end{itemize}
+        Combined this makes GPU programming tough to start with.
+        \begin{itemize}
+            \item OpenMP and OpenACC attempt to make things ``easy'', but they still have shortcomings
+        \end{itemize}
+    \end{info}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{info}{What next?}
+        You have seen some features of CUDA
+        \begin{itemize}
+            \item not an exhaustive overview!
+            \item there are some ``essential'' features that weren't covered
+        \end{itemize}
+        And more importantly, I hope that you have started to think about parallel work items
+        \begin{itemize}
+            \item a different perspective than thinking in loops
+            \item an important skill for more than just GPU programming
+        \end{itemize}
+    \end{info}
+
+\end{frame}
+
