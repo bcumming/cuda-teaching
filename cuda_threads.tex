@@ -6,12 +6,12 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{info}{Threads and kernels}
         \begin{itemize}
-            \item \emph{threads} are run simultaneously on GPU (1000s)
+            \item \emph{threads} are streams of execution, run simultaneously on GPU (1000s)
             \item \emph{kernel} is the task run by each thread
             \item CUDA provides language support for
             \begin{itemize}
                 \item writing kernels
-                \item launching many threads to execute parallel kernel
+                \item launching many threads to execute a kernel in parallel
             \end{itemize}
             \item CUDA hides the low-level details of launching threads
         \end{itemize}

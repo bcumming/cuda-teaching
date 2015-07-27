@@ -350,7 +350,6 @@ cudaFreeHost(hptr);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{code}{Using events to time kernel execution : \textbf{with helpers}}
         \begin{lstlisting}[style=boxcudatiny]
-CudaEvent start, end;
 CudaStream stream(true);
 
 auto start = stream.enqueue_event();
@@ -364,7 +363,6 @@ std::cout << "kernel took " << 1000*time_taken << " s\n";
     \end{code}
     \begin{code}{Copy$\rightarrow$kernel synchronization : \textbf{with helpers}}
         \begin{lstlisting}[style=boxcudatiny]
-CudaEvent event;
 CudaStream kernel_stream(true), h2d_stream(true);
 auto size = 100;
 auto dptr = device_malloc<double>(size);

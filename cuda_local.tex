@@ -61,7 +61,7 @@ void twice_blur(float *in, float *out, int n){
             \begin{itemize}
                 \item All threads in a block run on the same SMX
                 \item Resources for synchronization are at SMX level
-                \item No synchronization between blocks
+                \item No synchronization between threads in different blocks
             \end{itemize}
             \end{info}
         \end{column}

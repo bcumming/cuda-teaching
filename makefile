@@ -1,7 +1,10 @@
 LATEX=pdflatex
 #LATEX=lualatex
 
-all: cuda1.pdf cuda2.pdf cuda3.pdf cuda4.pdf gpu_introduction.pdf
+all: cuda1.pdf cuda2.pdf cuda3.pdf cuda4.pdf gpu_introduction.pdf cuda_miniapp.pdf
+
+cuda_miniapp.pdf: cuda_miniapp.tex beamerthemeCSCS.sty images
+	$(LATEX) cuda_miniapp.tex
 
 cuda1.pdf: cuda1.tex cuda_introduction.tex cuda_api.tex beamerthemeCSCS.sty images
 	$(LATEX) cuda1.tex

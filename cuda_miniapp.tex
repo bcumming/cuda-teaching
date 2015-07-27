@@ -14,7 +14,7 @@
 \usepackage{graphicx}
 
 % define footer text
-\newcommand{\footlinetext}{CUDA Extras}
+\newcommand{\footlinetext}{CUDA MiniApp}
 
 % Select the image for the title page
 \newcommand{\picturetitle}{cscs_images/image5.pdf}
@@ -83,7 +83,6 @@
         threadIdx, blockIdx, blockDim, gridDim,
         cudaStream_t, cudaStreamCreate, cudaStreamDestroy,
         cudaMemcpyDeviceToDevice, cudaMemcpyHostToHost,
-        dim3,
     },
     emphstyle={\lstfont{green!50!white}},
     breaklines=true
@@ -120,7 +119,6 @@
         threadIdx, blockIdx, blockDim, gridDim,
         cudaStream_t, cudaStreamCreate, cudaStreamDestroy,
         cudaMemcpyDeviceToDevice, cudaMemcpyHostToHost,
-        dim3,
     },
     emphstyle={\lstfont{green!50!white}},
     breaklines=true
@@ -153,7 +151,6 @@
         threadIdx, blockIdx, blockDim, gridDim,
         cudaStream_t, cudaStreamCreate, cudaStreamDestroy,
         cudaMemcpyDeviceToDevice, cudaMemcpyHostToHost,
-        dim3,
     },
     emphstyle={\lstfont{green!50!white}},
     breaklines=true
@@ -165,7 +162,7 @@
 % cscsred, cscsgrey, cscsgreen, cscsblue, cscsbrown, cscspurple, cscsyellow, cscsblack, cscswhite
 
 \author{Ben Cumming, CSCS}
-\title{CUDA: Concurrency and Other Topics}
+\title{CUDA: MiniApp}
 \subtitle{}
 \date{\today}
 
@@ -174,14 +171,71 @@
 % TITLE SLIDE
 \cscstitle
 
-% TABLE OF CONTENT SLIDE
-% All options for table of contents:
-% currentsection, currentsubsection, firstsection=xx, hideallsubsections, hideothersubsections, part=xx, pausesections, pausesubsections, sections=xx, sections={xx-yy}, sections={xx,yy}
-%\cscstableofcontents[hideallsubsections]{Title}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Unit Tests}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    Unit testing is a \emph{very good} development habit to get into
+    \begin{itemize}
+        \item write tests for features before implementing them
+        \item tests will pass when feature is finished
+        \item if a feature is broken in the future, the test will catch it immediately
+        \item tests can also be used to catch performance regressions
+    \end{itemize}
+    The CUDA miniapp uses unit tests to validate the blas1 functions in \lst{linalg.cu}
+    \begin{itemize}
+        \item initially all of the tests fail!
+        \item the tests are run with each \lst{make}
+    \end{itemize}
+    There are some very good open source unit testing frameworks available
+    \begin{itemize}
+        \item I use Google Test for my own work
+    \end{itemize}
+\end{frame}
 
-\input{cuda_2d.tex}
-\input{cuda_async.tex}
-\input{cuda_final.tex}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Step 1: Host-Device Data Synchronization}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    The \lst{Field} class implements storage of the 2D fields used in the miniapp
+    \begin{itemize}
+        \item it is extended for the CUDA version to store a copy of each field in both host and device memory
+        \item the data is pointed to by the \lst{Field::host_pointer_} and \lst{Field::device_pointer_} members
+    \end{itemize}
+    The data stored in the host and device regions can get out of synch
+    \begin{enumerate}
+        \item implement the member functions that synchronize the host and device data fields in \lst{data.h}
+        \item ensure that the initial conditions are updated on the device after computation in \lst{main.cu}
+    \end{enumerate}
+    One of the unit tests will pass when task 1 is finished.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Step 2: Linear Algebra}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    Implement all of the BLAS level 1 linear algebra kernels in \lst{linalg.cu}
+    \begin{itemize}
+        \item look for the \lst{TODO}s
+        \item each kernel is covered by a unit test
+        \item you will have to do some research into the cublas routines
+    \end{itemize}
+    all unit tests will pass when this task is finished
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Step 3: Stencils}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    implement the stencils in \lst{operators.cu}
+    \begin{itemize}
+        \item look for the \lst{TODO}s
+    \end{itemize}
+    the number of CG iterations and visualization can be used to validate results
+    \begin{itemize}
+        \item \emph{extra} can you use shared memory for the interior stencil?
+        \item \emph{extra} can you design an implementation that uses shared memory to implement the interior, boundary and corner stencils in one, simplified kernel?
+    \end{itemize}
+    How does time to solution compare with that for the MPI, OpenMP and serial versions?
+\end{frame}
+
+\cscschapter{Thank you for lasting this long!}
 
 \end{document}
 

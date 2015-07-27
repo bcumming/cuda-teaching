@@ -173,6 +173,23 @@ if(status != cudaSuccess) {
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Exercise: CUDA on Daint}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{enumerate}
+        \item to use CUDA we need to set up the environment
+        \begin{itemize}
+            \item CUDA uses the gnu compiler to compile the host code, so load the gnu environment
+            \item load the cudatoolkit module
+        \end{itemize}
+    \vspace{-5pt}
+\begin{lstlisting}[style=terminal]
+module swap PrgEnv-cray PrgEnv-gnu
+module cudatoolkit
+\end{lstlisting}
+    \end{enumerate}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{Exercise: API Basics}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     Open \lst{cuda/exercises/axpy/util.h}

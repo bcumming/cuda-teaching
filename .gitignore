@@ -15,5 +15,6 @@
 *.swn
 
 cuda[1-4].pdf
+cuda_miniapp.pdf
 gpu_introduction.pdf
 images/*.pdf

@@ -1,100 +1,243 @@
 %++++++++++++++++++++++++++++++++
-\cscschapter{Going 2D}
+\cscschapter{Going 2D and 3D}
 %++++++++++++++++++++++++++++++++
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \begin{info}{Multi-dimension launch}
-        Section about launch configurations
-        \begin{itemize}
-            \item \lst{dim3}
-            \item using \lst{threadIdx.x/y/z} etc.
-        \end{itemize}
-    \end{info}
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{2D Stencil Example}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    do i do this, or do I let them do it themselves?
-    \begin{code}{openmp code for a stencil}
-    \end{code}
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \begin{info}{2D stencil example}
-        \begin{itemize}
-            \item calculating position in flat array
-            \item launch configuration
-        \end{itemize}
-    \end{info}
+   \begin{info}{Launch Configuration}
+       \begin{itemize}
+           \item so far we have used one-dimensional launch configurations
+           \begin{itemize}
+               \item threads in blocks indexed using \lst{threadIdx.x}
+               \item blocks in a grid indexed using \lst{blockIdx.x}
+           \end{itemize}
+           \item many kernels map naturally onto 2D and 3D indexing
+           \begin{itemize}
+               \item e.g. matrix-matrix operations
+               \item e.g. stencils
+           \end{itemize}
+       \end{itemize}
+   \end{info}
 
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \begin{info}{Time for 1000 time steps \@ 128$\times$8192}
+   \begin{info}{Full Launch Configuration}
+        kernels launch dimensions can be specified with \lst{dim3} structs
         \begin{center}
-            \begin{tabular}{ccc}
-                \hline
-                nodes   &   G2G off & G2G on \\
-                 \hline
-                 1      &   0.242   & 0.242  \\
-                 2      &   0.147   & 0.125  \\
-                 4      &   0.107   & 0.069  \\
-                 8      &   0.078   & 0.042  \\
-                16      &   0.063   & 0.042  \\
-            \end{tabular}
+        \lst{kernel@<<<@dim3 gridDim, dim3 blockDim@>>>@(...);}
         \end{center}
-    \end{info}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \begin{info}{Is this so hard?}
-        Each topic so far has not been too complicated:
-        \begin{itemize}
-            \item moving memory between host and device
-            \item writing kernels
-            \item parallel kernel launching
-            \item ... ok, concurrency is hard (but concurrency is hard on the CPU too)
-        \end{itemize}
-        However, there is a lot that you have to keep in mind:
-        \begin{itemize}
-            \item where is my data?
-            \item loop free thinking: individual work items to be performed in parallel
-            \item synchronization between threads, host and device?
-        \end{itemize}
-        Combined this makes GPU programming tough to start with.
-        \begin{itemize}
-            \item OpenMP and OpenACC attempt to make things ``easy'', but they still have shortcomings
-        \end{itemize}
-    \end{info}
+       \begin{itemize}
+           \item \lst{dim3.x}, \lst{dim3.y} and \lst{dim3.z} specify the launch dimensions
+           \item can be constructed with 1, 2 or 3 dimensions
+           \item unspecified \lst{dim3} dimensions are set to 1
+       \end{itemize}
+   \end{info}
+   \begin{code}{launch configuration examples}
+        \begin{lstlisting}[style=boxcudatiny]
+// 1D: 128x1x1 for 128 threads
+dim3 a(128);
+// 2D: 16x8x1  for 128 threads
+dim3 b(16, 8);
+// 3D: 16x8x4  for 512 threads
+dim3 c(16, 8, 4);
+        \end{lstlisting}
+   \end{code}
 
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \begin{info}{What next?}
-        You have seen some features of CUDA
+
+    The \lst{threadIdx}, \lst{blockDim}, \lst{blockIdx} and \lst{gridDim} can be treated like 3D vectors via the \lst{.x}, \lst{.y} and \lst{.z} members.
+    \begin{code}{matrix addition example}
+        \begin{lstlisting}[style=boxcudatiny]
+__global__
+void MatAdd(float *A, float *B, float *C, int n) {
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    int j = blockIdx.y * blockDim.y + threadIdx.y;
+    if(i<n && j<n) {
+        auto pos = i + j*n;
+        C[pos] = A[pos] + B[pos];
+    }
+}
+int main() {
+    // ...
+    dim3 threadsPerBlock(16, 16);
+    dim3 numBlocks(n / threadsPerBlock.x, n / threadsPerBlock.y);
+    MatAdd<<<numBlocks, threadsPerBlock>>>(A, B, C);
+    // ...
+}
+        \end{lstlisting}
+   \end{code}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Exercise: Launch Configurations}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{itemize}
+        \item 2D stencil in \lst{diffusion/diffusion2d.cu}
         \begin{itemize}
-            \item not an exhaustive overview!
-            \item there are some ``essential'' features that weren't covered
+            \item a plotting script is provided for visualizing the results
+            \item use a small domain for visualization
         \end{itemize}
-        And more importantly, I hope that you have started to think about parallel work items
+        \item \emph{extra}: can you improve performance with shared memory?
+    \end{itemize}
+
+    \begin{code}{}
+        \begin{lstlisting}[style=boxcudatiny]
+cd cuda/exercises/diffusion
+make
+aprun diffusion2d.cuda 8
+module load python/2.7.6
+python plotting.py
+        \end{lstlisting}
+   \end{code}
+
+\end{frame}
+
+%++++++++++++++++++++++++++++++++
+\cscschapter{MPI with GPUs}
+%++++++++++++++++++++++++++++++++
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{info}{MPI with data in device memory}
+        Our GPU-accelerated applications use GPUs to parallelize on-node computation
         \begin{itemize}
-            \item a different perspective than thinking in loops
-            \item an important skill for more than just GPU programming
+            \item and MPI for communication between nodes
+        \end{itemize}
+        It is likely that communication between MPI ranks will involve information on the GPU
+        \begin{enumerate}
+            \item allocate buffers in host memory
+            \item manually copy from device$\rightarrow$host memory
+            \item perform MPI communication with host buffers
+            \item copy received data from host$\rightarrow$device memory
+        \end{enumerate}
+        This approach can be very fast:
+        \begin{itemize}
+            \item have a CPU thread dedicated to asynchronous host$\leftrightarrow$device and MPI communication
         \end{itemize}
     \end{info}
 
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{info}{GPU-Aware MPI}
+        GPU-aware MPI implementations can automatically handle MPI transactions with pointers to GPU memory
+        \begin{itemize}
+            \item MVAPICH 2.0
+            \item OpenMPI since version 1.7.0
+            \item Cray MPI
+        \end{itemize}
+    \end{info}
+
+    \begin{info}{How it works}
+        \begin{itemize}
+            \item each pointer passed to MPI is checked to see if it is in host or device memory
+            if not set, MPI assumes that all pointers are to host memory, and your application will probably crash with segmentation faults\item small messages between GPUs (up to $\approx$8 k) are copied directly with \emph{RDMA}
+            \item larger messages are \emph{pipelined} via host memory
+        \end{itemize}
+    \end{info}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{info}{How to use G2G communication}
+        \begin{itemize}
+            \item set the environment variable \lst{export MPICH_RDMA_ENABLED_CUDA=1}
+            \begin{itemize}
+                \item if not set, MPI assumes that all pointers are to host memory, and your application will probably crash with segmentation faults
+            \end{itemize}
+            \item experiment with the environment variable \lst{MPICH_G2G_PIPELINE}
+            \begin{itemize}
+                \item sets the maximum number of 512 kB message chunks that can be in flight (default 16)
+            \end{itemize}
+        \end{itemize}
+    \end{info}
+   \begin{code}{MPI with G2G example}
+        \begin{lstlisting}[style=boxcudatiny]
+MPI_Request srequest, rrequest;
+auto send_data = malloc_device<double>(100);
+auto recv_data = malloc_device<double>(100);
+
+// call MPI with GPU pointers
+MPI_Irecv(recv_data, 100, MPI_DOUBLE, source, tag, MPI_COMM_WORLD, &rrequest);
+MPI_Isend(send_data, 100, MPI_DOUBLE, target, tag, MPI_COMM_WORLD, &srequest);
+        \end{lstlisting}
+   \end{code}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{info}{Capabilities and Limitations}
+        \begin{itemize}
+            \item support for most MPI API calls (point-to-point, collectives, etc)
+            \item robust support for common MPI API calls
+            \begin{itemize}
+                \item i.e. point-to-point operations 
+            \end{itemize}
+            \item no support for user-defined MPI data types
+        \end{itemize}
+    \end{info}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Exercise: MPI with G2G}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{itemize}
+        \item 2D stencil with MPI in \lst{diffusion/diffusion2d_mpi.cu}
+        \item copy the kernel and kernel lanuch from previous example
+        \begin{enumerate}
+            \item implement MPI communication with host buffering
+            \item implement MPI communication with G2G
+            \item can you observe any performance differences between the two?
+            \item why are we restricted to just 1 MPI rank per node, i.e. \lst{aprun -N 1}
+        \end{enumerate}
+    \end{itemize}
+
+    \begin{code}{}
+        \begin{lstlisting}[style=boxcudatiny]
+cd cuda/exercises/diffusion
+make
+aprun -n 2 -N 1 diffusion2d_mpi.cuda 8
+module load python/2.7.6
+python plotting.py
+# once it gets the correct results:
+sbatch job.daint
+        \end{lstlisting}
+   \end{code}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Exercises: 2D Diffusion with MPI Results}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   \begin{info}{Time for 1000 time steps \@ 128$\times$16,382}
+       \begin{center}
+           \begin{tabular}{ccc}
+               \hline
+               nodes   &   G2G off & G2G on \\
+                \hline
+                1      &   0.479   & 0.479  \\
+                2      &   0.277   & 0.274  \\
+                4      &   0.183   & 0.180  \\
+                8      &   0.152   & 0.151  \\
+               16      &   0.167   & 0.117  \\
+           \end{tabular}
+       \end{center}
+   \end{info}
 \end{frame}
 

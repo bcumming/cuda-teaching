@@ -169,7 +169,7 @@ add_gpu@<<<@num_blocks, block_size@>>>@(a, b, n);
         \end{center}
         Most likely, the number of work items \lst{n} is not a multiple of \lst{threads_per_block}.
         \begin{itemize}
-            \item in this case we have one thread block in which not all threads will work
+            \item in which case some threads in the last thread block will do any work
         \end{itemize}
     \end{info}
 
@@ -230,14 +230,18 @@ add_gpu@<<<@num_blocks, block_size@>>>@(a, b, n);
         \item Experiment with varying the size of the arrays (scaling)
         \begin{itemize}
             \item start small and increase
-            \item how does it affect the kernel execution time?
+        \end{itemize}
+
+        \item finish the \lst{newton.cu} example
+        \begin{itemize}
+            \item how do the h2d, d2h and kernel timings compare?
         \end{itemize}
 
         \item \extra Compare scaling with the \lst{axpy_omp} benchmark
 
         \item \extra Experiment with varying the block size
         \begin{itemize}
-            \item try \lst{block_size} calculated by \lst{cudaOccupancyMaxPotentialBlockSize}.
+            \item try \lst{cudaOccupancyMaxPotentialBlockSize}.
         \end{itemize}
 
     \end{enumerate}
