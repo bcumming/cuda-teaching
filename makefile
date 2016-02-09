@@ -21,11 +21,13 @@ cuda4.pdf: cuda4.tex cuda_async.tex cuda_2d.tex cuda_final.tex beamerthemeCSCS.s
 gpu_introduction.pdf: beamerthemeCSCS.sty images gpu_introduction.tex
 	$(LATEX) gpu_introduction.tex
 
-force : cuda1.pdf cuda2.pdf cuda3.pdf cuda4.pdf
+force : cuda1.pdf cuda2.pdf cuda3.pdf cuda4.pdf cuda_miniapp.tex gpu_introduction.tex
 	$(LATEX) cuda1.tex
 	$(LATEX) cuda2.tex
 	$(LATEX) cuda3.tex
 	$(LATEX) cuda4.tex
+	$(LATEX) cuda_miniapp.tex
+	$(LATEX) gpu_introduction.tex
 
 images : images/*.tex
 	cd images; make;

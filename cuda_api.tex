@@ -184,7 +184,7 @@ if(status != cudaSuccess) {
     \vspace{-5pt}
 \begin{lstlisting}[style=terminal]
 module swap PrgEnv-cray PrgEnv-gnu
-module cudatoolkit
+module load cudatoolkit
 \end{lstlisting}
     \end{enumerate}
 
@@ -194,7 +194,7 @@ module cudatoolkit
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     Open \lst{cuda/exercises/axpy/util.h}
     \begin{enumerate}
-        \item what does \lst{cuda_check_error()} do?
+        \item what does \lst{cuda_check_status()} do?
         \item look at the template wrappers \lst{malloc_host} \& \lst{malloc_device}
         \begin{itemize}
             \item what do they do?
@@ -214,8 +214,8 @@ module cudatoolkit
 
     \vspace{-5pt}
 \begin{lstlisting}[style=terminal]
-make axpy_cublas
-aprun ./axpy_cublas 8
+make axpy_cublas.cuda
+aprun ./axpy_cublas.cuda 8
 \end{lstlisting}
     \end{enumerate}
 
