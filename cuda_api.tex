@@ -24,10 +24,10 @@
             \item ensure data is in the right memory space \emph{before} computation starts
             \item on Piz Daint the respective bandwidths are:
             \begin{center}
-            \begin{tabular}{lr}
-                \textbf{host $\leftrightarrow$ device} & 6 GB/s \\
-                \textbf{host memory} & 35 GB/s \\
-                \textbf{device memory}  & 180 GB/s
+            \begin{tabular}{lcr}
+                \textbf{host $\leftrightarrow$ device} & 6 GB/s   &    PCIe gen2 \\
+                \textbf{host memory}                   & 35 GB/s  &    DDR3      \\
+                \textbf{device memory}                 & 180 GB/s &    GDDR5
             \end{tabular}
             \end{center}
         \end{itemize}
@@ -175,6 +175,7 @@ if(status != cudaSuccess) {
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{Exercise: CUDA on Daint}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \todo{update for new system}
     \begin{enumerate}
         \item to use CUDA we need to set up the environment
         \begin{itemize}
