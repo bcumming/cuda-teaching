@@ -69,7 +69,7 @@ int main() {
     // ...
     dim3 threadsPerBlock(16, 16);
     dim3 numBlocks(n / threadsPerBlock.x, n / threadsPerBlock.y);
-    MatAdd<<<numBlocks, threadsPerBlock>>>(A, B, C);
+    MatAdd<<<numBlocks, threadsPerBlock>>>(A, B, C, n);
     // ...
 }
         \end{lstlisting}
@@ -142,8 +142,9 @@ python plotting.py
 
     \begin{info}{How it works}
         \begin{itemize}
-            \item each pointer passed to MPI is checked to see if it is in host or device memory
-            if not set, MPI assumes that all pointers are to host memory, and your application will probably crash with segmentation faults\item small messages between GPUs (up to $\approx$8 k) are copied directly with \emph{RDMA}
+        \item each pointer passed to MPI is checked to see if it is in host or device memory.
+        %\item if not set, MPI assumes that all pointers are to host memory, and your application will probably crash with segmentation 
+        \item small messages between GPUs (up to $\approx$8 k) are copied directly with \emph{RDMA}
             \item larger messages are \emph{pipelined} via host memory
         \end{itemize}
     \end{info}

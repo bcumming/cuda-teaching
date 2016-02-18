@@ -22,11 +22,11 @@ int dot(int *x, int *y, int n){
 %----------------------------
 \vspace{-7pt}
 %----------------------------
-        \begin{code}{scan : e.g. prefix sum}
+        \begin{code}{scan : e.g. prefix or partial sum}
             \begin{lstlisting}[style=boxcudatiny]
 void prefix_sum(int *x, int n){
   for(auto i=1; i<n; ++i)
-    x[i] += x[i-1];
+      x[i] = x[i] + x[i-1];
 }
         \end{lstlisting}
     \end{code}
@@ -83,7 +83,12 @@ void twice_blur(float *in, float *out, int n){
                 \item ... except via atomic operations on global memory
             \end{itemize}
         \end{itemize}
-    %\end{info}
+
+        \emph{Note}: there are some low level intrinsics for cooperation between threads in the same \emph{warp}
+        \begin{itemize}
+            \item warp votes and shuffles
+            \item still restricted to the same thread block
+        \end{itemize}
 
 \end{frame}
 

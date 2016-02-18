@@ -173,20 +173,38 @@ if(status != cudaSuccess) {
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{Exercise: CUDA on Daint}
+\begin{frame}[fragile]{Exercise: Getting Ready}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \todo{update for new system}
+    %\todo{update for new system}
     \begin{enumerate}
         \item to use CUDA we need to set up the environment
         \begin{itemize}
-            \item CUDA uses the gnu compiler to compile the host code, so load the gnu environment
+            \item CUDA uses the gnu compiler to compile the host code
+            \begin{itemize}
+                \item A more recent version of GCC (4.8+) required for C++11 support
+            \end{itemize}
             \item load the cudatoolkit module
         \end{itemize}
     \vspace{-5pt}
+
+%        \item Example for Piz Daint:
+%\begin{lstlisting}[style=terminal]
+%module swap PrgEnv-cray PrgEnv-gnu
+%module load cudatoolkit
+%\end{lstlisting}
+        \item on EURORA:
 \begin{lstlisting}[style=terminal]
-module swap PrgEnv-cray PrgEnv-gnu
-module load cudatoolkit
+# get code via git
+git clone https://github.com/eth-cscs/cineca-cuda.git
+
+# or via wget
+wget https://github.com/eth-cscs/cineca-cuda/archive/master.zip
+unzip master.zip
+
+# set up environment
+module load gnu cuda
 \end{lstlisting}
+
     \end{enumerate}
 
 \end{frame}
@@ -199,13 +217,14 @@ module load cudatoolkit
         \item look at the template wrappers \lst{malloc_host} \& \lst{malloc_device}
         \begin{itemize}
             \item what do they do?
-            \item what are the benefits over using \lst{cudaMalloc} and \lst{free} directly?
+            \item what are the benefits over using \lst{cudaMalloc} and \lst{malloc} directly?
             \item do we need corresponding functions for \lst{cudaFree} and \lst{free}?
         \end{itemize}
 
         \item write a wrapper around \lst{cudaMemcpy} for copying data \texttt{host$\rightarrow$device} \& \texttt{device$\rightarrow$host}
         \begin{itemize}
-            \item remember to check for errors!
+            \item see \lst{copy_to_device} \& \lst{copy_to_host}
+            \item remember to check for errors
         \end{itemize}
 
         \item compile the test and run
