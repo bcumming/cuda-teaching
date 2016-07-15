@@ -83,7 +83,7 @@ host_2(...);
         \begin{itemize}
             \item operations in different streams \emph{may} run concurrently
             \begin{itemize}
-                \item there have to be sufficient resources on the GPU (registers, shared memory, blocks, etc)
+                \item there have to be sufficient resources on the GPU (registers, shared memory, SMXs, etc)
             \end{itemize}
             \item operations in the same stream \emph{are} executed sequentially
             \item if no stream is specified, all kernels are launched in the default stream
@@ -450,7 +450,7 @@ cudaFreeHost(hptr);
 
         Streams come into their own for overlapping communication and computation
         \begin{itemize}
-            \item possible to transfer data in both directions concurrently with kernels execution
+            \item possible to transfer data in both directions concurrently with kernel execution
         \end{itemize}
     \end{info}
 \end{frame}

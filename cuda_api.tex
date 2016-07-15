@@ -175,19 +175,20 @@ if(status != cudaSuccess) {
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{Exercise: CUDA on Daint}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \todo{update for new system}
     \begin{enumerate}
         \item to use CUDA we need to set up the environment
         \begin{itemize}
             \item CUDA uses the gnu compiler to compile the host code, so load the gnu environment
             \item load the cudatoolkit module
         \end{itemize}
-    \vspace{-5pt}
-\begin{lstlisting}[style=terminal]
+    \end{enumerate}
+
+\begin{code}{set up enviroment on Daint}
+\begin{lstlisting}[]
 module swap PrgEnv-cray PrgEnv-gnu
 module load cudatoolkit
 \end{lstlisting}
-    \end{enumerate}
+\end{code}
 
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -214,10 +215,12 @@ module load cudatoolkit
         \end{itemize}
 
     \vspace{-5pt}
-\begin{lstlisting}[style=terminal]
+\begin{code}{running the first practical}
+\begin{lstlisting}[]
 make axpy_cublas.cuda
-aprun ./axpy_cublas.cuda 8
+srun ./axpy_cublas.cuda 8
 \end{lstlisting}
+\end{code}
     \end{enumerate}
 
 \end{frame}

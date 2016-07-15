@@ -5,7 +5,7 @@
 \begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{info}{}
-        In the \axpy exercises we were limitted to 1024 threads for a kernel launch
+        In the \axpy exercises we were limited to 1024 threads for a kernel launch
         \begin{itemize}
             \item but we need to scale beyond 1024 threads for the \emph{massive parallelism} we were promised!
         \end{itemize}
@@ -31,7 +31,7 @@
 \begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{info}{Why the additional complexity of grids+blocks+threads?}
-        \centering Because coordination and sharing between threads doesn't scale:
+        \centering \emph{Because coordination between threads doesn't scale}
         \begin{itemize}
             \item threads in a block can synchronize and share resources
             \item this does not scale past a certain number of cores/threads

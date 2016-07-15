@@ -149,7 +149,7 @@ add_gpu@<<<@1,n@>>>@(a, b, n);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{Exercise: My First Kernel}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    Open \lst{cuda/exercises/axpy/axpy_kernel.cu}
+    Open \lst{topics/cuda/practicals/axpy/axpy_kernel.cu}
 
     \begin{enumerate}
         \item Write a kernel that implements \axpy for \lst{double}
@@ -158,7 +158,7 @@ add_gpu@<<<@1,n@>>>@(a, b, n);
             \item \extra can you write a C++ templated version for any type?
         \end{itemize}
 
-        \item Replace the call to \lst{cublasDaxpy} with an invocation of your new kernel
+    \item launch the kernel (look for \lst{TODO})
         \item Compile the test and run
         \begin{itemize}
             \item it will pass with no errors on success

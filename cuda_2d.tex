@@ -26,7 +26,7 @@
 \begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    \begin{info}{Full Launch Configuration}
-        kernels launch dimensions can be specified with \lst{dim3} structs
+        kernel launch dimensions can be specified with \lst{dim3} structs
         \begin{center}
         \lst{kernel@<<<@dim3 gridDim, dim3 blockDim@>>>@(...);}
         \end{center}
@@ -89,12 +89,13 @@ int main() {
         \item \emph{extra}: can you improve performance with shared memory?
     \end{itemize}
 
-    \begin{code}{}
+    \begin{code}{running the code}
         \begin{lstlisting}[style=boxcudatiny]
-cd cuda/exercises/diffusion
-make
-aprun diffusion2d.cuda 8
 module load python/2.7.6
+cd cuda/practicals/diffusion
+
+make
+srun diffusion2d.cuda 8 1000000
 python plotting.py
         \end{lstlisting}
    \end{code}
@@ -204,19 +205,19 @@ MPI_Isend(send_data, 100, MPI_DOUBLE, target, tag, MPI_COMM_WORLD, &srequest);
             \item implement MPI communication with host buffering
             \item implement MPI communication with G2G
             \item can you observe any performance differences between the two?
-            \item why are we restricted to just 1 MPI rank per node, i.e. \lst{aprun -N 1}
+            \item why are we restricted to just 1 MPI rank per node?
         \end{enumerate}
     \end{itemize}
 
-    \begin{code}{}
+    \begin{code}{running the MPI example}
         \begin{lstlisting}[style=boxcudatiny]
-cd cuda/exercises/diffusion
+cd cuda/practicals/diffusion
 make
-aprun -n 2 -N 1 diffusion2d_mpi.cuda 8
+srun -n2 -N2 diffusion2d_mpi.cuda 8
 module load python/2.7.6
 python plotting.py
 # once it gets the correct results:
-sbatch job.daint
+sbatch job.batch
         \end{lstlisting}
    \end{code}
 
