@@ -31,6 +31,7 @@
 \newcommand{\lstfont}[1]{\color{#1}\scriptsize\ttfamily}
 \newcommand{\lsttinyfont}[1]{\color{#1}\fontsize{7}{7}\ttfamily}
 \newcommand{\lstinlinefont}[1]{\color{#1}\scriptsize\ttfamily}
+\newcommand{\todo}[1]{{\color{red}{#1}}}
 
 % set indent to a more reasonable level (so that itemize can be used in columns)
 \setlength{\leftmargini}{20pt}
@@ -185,8 +186,8 @@
         \end{itemize}
         \emph{Many-core Accelerators} with many highly-specialized cores and high-bandwidth memory
         \begin{itemize}
-            \item NVIDIA K20X GPUs with 2688 cores
-            \item Intel KNL with 72 cores $\times$ 4 threads
+            \item NVIDIA P100 GPUs with 3582 cores
+            \item Intel KNL with 64 cores $\times$ 4 threads
         \end{itemize}
     \end{info}
 
@@ -225,7 +226,6 @@
 \begin{frame}[fragile]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{info}{MPI and the free lunch}
-        %In 2005 Herb Sutter wrote an article called ``The Free Lunch is Over''
         HPC applications were ported to use the message passing library MPI in the late 90s and early 2000s at great cost and effort
         \begin{itemize}
             \item individual nodes with one or two CPUs
@@ -287,7 +287,7 @@
         In fact, clock frequencies have been going down as the number of cores increases
         \begin{itemize}
             \item a 4-core Haswell processor at 3.5 GHz (4*3.5=14 Gops/second) has the same power consumption as a 12-core Haswell at 2.6 GHz (12*2.6=31 Gops/second)
-            \item a K20X GPU with 2688 CUDA cores runs at 800 MHz
+            \item a P100 GPU with 3582 CUDA cores runs at 1.1 GHz
         \end{itemize}
     \end{info}
 \end{frame}
@@ -301,7 +301,7 @@
             \item the width of vector lanes in CPUs will increase
             \begin{itemize}
                 \item currently 4 doubles for AVX
-                \item increase to 8 double for AVX-3 (KNL and Skylake)
+                \item increase to 8 double for AVX512 (KNL and Skylake)
             \end{itemize}
             \item the number of threads per core will increase
             \begin{itemize}
@@ -327,16 +327,18 @@
         \end{itemize}
     \end{info}
     \begin{info}{CPU solution: deep caches and prefetching}
-        \begin{itemize}
-            \item use fast on-chip memory to \emph{cache} frequently used data
-            \item use hardware to \emph{prefetch} data to cache before it is required
-        \end{itemize}
+        \todo{image from NVIDIA}
+        %\begin{itemize}
+            %\item use fast on-chip memory to \emph{cache} frequently used data
+            %\item use hardware to \emph{prefetch} data to cache before it is required
+        %\end{itemize}
     \end{info}
     \begin{info}{GPU solution: over subscribe threads to cores}
-        \begin{itemize}
-            \item schedule many threads per core
-            \item threads that are waiting for data are idle
-        \end{itemize}
+        \todo{image from NVIDIA}
+        %\begin{itemize}
+            %\item schedule many threads per core
+            %\item threads that are waiting for data are idle
+        %\end{itemize}
     \end{info}
 \end{frame}
 
@@ -382,7 +384,7 @@
         \begin{itemize}
             \item use an off the shelf solution implemented in a library
             \item for specific tasks like dense linear algebra and FFTs, libraries are very hard to beat
-            \item e.g. cublas, PETSc, cuFFT
+            \item e.g. cublas and cuFFT
         \end{itemize}
     \end{info}
 
