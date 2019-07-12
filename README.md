@@ -1,8 +1,3 @@
+Slides for teaching an basic-intermediate CUDA programming. The material is meant to be presented along with practicals over two full days.
 
-
-This repository contains the beamer theme for CSCS presentation.
-It is almost identical as the one used for PowerPoint.
-
-An example shows how to use it and the different options to configure it.
-
-Just issue ``make`` to build the example slides.
+Use the makefile to generate all of the slides as PDFs from the LaTeX source.
